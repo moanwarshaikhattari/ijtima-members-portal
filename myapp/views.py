@@ -85,28 +85,33 @@ def Usersignup(request):
     if request.user.is_authenticated:
         return redirect('members')
 
+    # STEP 2: VERIFY OTP
     if request.method == 'POST' and 'verify_otp' in request.POST:
-        entered_otp = request.POST.get('otp')
+        entered_otp = request.POST.get('otp', '').strip()
         signup_data = request.session.get('signup_data')
 
         if not signup_data:
             messages.error(request, "Session expired. Please register again.")
             return redirect('register')
 
-        if entered_otp == signup_data['otp']:
+        if entered_otp == str(signup_data['otp']):
+            # Create user in Django auth_user
             user = User.objects.create_user(
                 username=signup_data['email'],
                 email=signup_data['email'],
                 password=signup_data['password'],
                 first_name=signup_data['full_name']
             )
-            # Save profile fields including mobile
+            
+            # Save extra fields in User Profile
             user.profile.department = signup_data['department']
             user.profile.location = signup_data['location']
-            user.profile.mobile = signup_data['mobile']  # <-- Save Mobile Number
+            user.profile.mobile = signup_data['mobile']
             user.profile.save()
 
+            # Clean session data after successful registration
             del request.session['signup_data']
+            
             messages.success(request, "Account created successfully! Please login.")
             return redirect('login')
         else:
@@ -117,24 +122,28 @@ def Usersignup(request):
                 'email': signup_data['email']
             })
 
+    # STEP 1: SEND OTP
     elif request.method == 'POST' and 'send_otp' in request.POST:
-        full_name = request.POST.get('name')
-        email = request.POST.get('email')
-        mobile = request.POST.get('mobile')  # <-- Get Mobile Input
-        department = request.POST.get('department')
-        location = request.POST.get('location')
-        password = request.POST.get('password')
+        full_name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        department = request.POST.get('department', '').strip()
+        location = request.POST.get('location', '').strip()
+        password = request.POST.get('password', '').strip()
 
+        # Check if user already exists
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email is already registered.")
             return redirect('register')
 
+        # Generate 6-digit random OTP
         otp = str(random.randint(100000, 999999))
 
+        # Store form data & OTP in session
         request.session['signup_data'] = {
             'full_name': full_name,
             'email': email,
-            'mobile': mobile,  # <-- Store in session
+            'mobile': mobile,
             'department': department,
             'location': location,
             'password': password,
@@ -145,18 +154,30 @@ def Usersignup(request):
         message = f'Hello {full_name},\n\nYour OTP code for registration is: {otp}'
         
         try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+            # Send email to the entered recipient
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
             messages.success(request, f"OTP code sent to {email}. Please enter it below.")
+            
             return render(request, 'register.html', {
                 'title': 'New Zimmedar Register',
                 'otp_sent': True,
                 'email': email
             })
-        except Exception:
+
+        except Exception as e:
             messages.error(request, "Failed to send OTP. Please check your email configuration.")
             return redirect('register')
 
-    return render(request, 'register.html', {'title': 'New Zimmedar Register', 'otp_sent': False})
+    return render(request, 'register.html', {
+        'title': 'New Zimmedar Register', 
+        'otp_sent': False
+    })
 
 @login_required(login_url='login')
 def Userprofile(request):
