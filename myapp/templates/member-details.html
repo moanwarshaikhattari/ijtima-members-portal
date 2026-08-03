@@ -77,12 +77,17 @@
                   <div class="col-md-6">
                     <label class="form-label" for="location">Location*</label>
                     <select class="form-select form-control mb-0" id="location" name="location">
-                      <option value="">--Select Location--</option>
-                      <option value="Belapur" {% if member.location == "Belapur" %}selected{% endif %}>Belapur</option>
+                      <!-- <option value="">--Select Location--</option> -->
+                      <!-- <option value="Belapur" {% if member.location == "Belapur" %}selected{% endif %}>Belapur</option>
                       <option value="Kopar Khairne" {% if member.location == "Kopar Khairne" %}selected{% endif %}>Kopar Khairne</option>
                       <option value="Nerul" {% if member.location == "Nerul" %}selected{% endif %}>Nerul</option>
                       <option value="Kharghar" {% if member.location == "Kharghar" %}selected{% endif %}>Kharghar</option>
-                      <option value="Vashi" {% if member.location == "Vashi" %}selected{% endif %}>Vashi</option>
+                      <option value="Vashi" {% if member.location == "Vashi" %}selected{% endif %}>Vashi</option> -->
+                      {% for key, value in Member.LOCATION_CHOICES %}
+                          <option value="{{ key }}" {% if member.location == key %}selected{% endif %}>
+                              {{ value }}
+                          </option>
+                      {% endfor %}
                     </select>
                     <div class="error" id="errorLocation"></div>
                   </div>

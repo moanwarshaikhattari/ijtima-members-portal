@@ -29,6 +29,9 @@
       font-size:12px;
       margin-top:5px;
     }
+    .info-list strong{
+      font-size: 12px;
+    }
     @media (max-width: 768px) {
       .profile-cover img {
         width: 300px !important;
@@ -109,7 +112,7 @@
                                 </div>
                                 <div class="col-md-6">
                                   <label class="form-label" for="profileEmail">Email*</label>
-                                  <input class="form-control" id="profileEmail" name="email" type="email" placeholder="Enter Email ID" value="{{ user.email }}">
+                                  <input class="form-control" disabled id="profileEmail" name="email" type="email" placeholder="Enter Email ID" value="{{ user.email }}">
                                   <div class="text-danger error" id="errorEmail"></div>
                                 </div>
                                 <div class="col-md-6">

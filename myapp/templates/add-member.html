@@ -83,11 +83,16 @@
                     <label class="form-label" for="location">Location*</label>
                     <select class="form-select form-control mb-0" id="location" name="location">
                       <option value="">--Select Location--</option>
-                      <option value="Belapur">Belapur</option>
+                      <!-- <option value="Belapur">Belapur</option>
                       <option value="Kopar Khairne">Kopar Khairne</option>
                       <option value="Nerul">Nerul</option>
                       <option value="Kharghar">Kharghar</option>
-                      <option value="Vashi">Vashi</option>
+                      <option value="Vashi">Vashi</option> -->
+                      {% for key, value in Member.LOCATION_CHOICES %}
+                          <option value="{{ key }}" {% if entered_location == key %}selected{% endif %}>
+                              {{ value }}
+                          </option>
+                      {% endfor %}
                     </select>
                     <div class="text-danger error" id="errorLocation"></div>
                   </div>

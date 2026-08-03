@@ -238,6 +238,7 @@ def add_member(request):
         name = request.POST.get('name')
         mobile = request.POST.get('mobile')
         location = request.POST.get('location')
+        
 
         # CHECK: Entire Database me Mobile exist karta hai ya nahi? (Anwar ya kisi ne bhi add kiya ho)
         if Member.objects.filter(mobile=mobile).exists():
@@ -247,7 +248,8 @@ def add_member(request):
                 'error_mobile': 'This mobile number already exists in database!',
                 'entered_name': name,
                 'entered_mobile': mobile,
-                'entered_location': location
+                'entered_location': location,
+                "Member": Member,
             })
 
         # Save Member
@@ -273,7 +275,7 @@ def add_member(request):
 
         return redirect('members')
 
-    return render(request, 'add-member.html', {'title': 'Add Member'})
+    return render(request, 'add-member.html', {'title': 'Add Member','Member': Member,})
 
 @login_required(login_url='login')
 def edit_member(request, pk):
@@ -288,7 +290,8 @@ def edit_member(request, pk):
 
     return render(request, 'member-details.html', {
         'title': 'Edit Member Details',
-        'member': member
+        'member': member,
+        "Member": Member,  # For LOCATION_CHOICES
     })
 
 
