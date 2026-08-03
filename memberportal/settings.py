@@ -134,10 +134,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Static directories
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_storage') # <-- Must match distDir in vercel.json
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_storage')
 
-# Simple Whitenoise Storage
+# WhiteNoise Storage for production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Default primary key field type
