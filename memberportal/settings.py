@@ -126,20 +126,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-# STATIC FILES CONFIGURATION (Vercel ke liye)
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-
-# Static directories
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_storage')
-
-# WhiteNoise Storage for production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -158,3 +145,15 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')       
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')       
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+# STATIC FILES CONFIGURATION (Vercel ke liye)
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_storage')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
