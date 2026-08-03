@@ -54,7 +54,7 @@
                 <tbody>
                   {% for user_obj in users_list %}
                   <tr>
-                    <td>
+                    <td style="min-width: 180px;">
                       <p class="fw-semibold mb-0">
                         {% if user_obj.get_full_name %}
                           {{ user_obj.get_full_name|title }}

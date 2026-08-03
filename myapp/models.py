@@ -54,11 +54,15 @@ class Member(models.Model):
         ("Uran", "Uran"),
         ("Vashi", "Vashi"),
     ]
+    BLOOD_CHOICES=[
+        ("YES", "YES"),
+        ("NO", "NO"),
+    ]
 
     name = models.CharField(max_length=100)
     mobile = models.CharField(max_length=10)
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES)
-    
+    blood_donate = models.CharField(max_length=10, choices=BLOOD_CHOICES, null=True, blank=True)
     # Member add karne wale logged-in user ka Full Name automatically save hoga
     zimmedar_name = models.CharField(max_length=100)
     

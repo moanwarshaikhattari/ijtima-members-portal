@@ -62,6 +62,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Mobile</th>
                     <th scope="col">Location</th>
+                    <th scope="col">Blood Donate</th>
                     <th scope="col">Joined Date</th>
                     <th scope="col">Zimmedar Name</th>
                     <th scope="col" class="text-end">Action</th>
@@ -75,6 +76,7 @@
                     </td>
                     <td><a href="tel:+91{{ member.mobile }}">{{ member.mobile }}</a></td>
                     <td>{{ member.location }}</td>
+                    <td style="text-align: center;">{{ member.blood_donate }}</td>
                     <td>{{ member.joined_at|date:"d M Y" }}</td>
                     <td>{{ member.zimmedar_name|title }}</td>
                     <td class="text-end">

@@ -52,35 +52,6 @@ def Userlogin(request):
     return render(request, 'login.html', data)
 
 
-# def Userlogin(request):
-#     # Agar user pehle se logged in hai, toh unke role ke hisab se direct page par bhejo
-#     if request.user.is_authenticated:
-#         if request.user.is_superuser or request.user.is_staff:
-#             return redirect('allmembers')
-#         return redirect('members')
-
-#     if request.method == 'POST':
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-
-#         user = authenticate(request, username=username, password=password)
-
-#         if user is not None:
-#             login(request, user)
-
-#             # --- ROLE BASED REDIRECT LOGIC ---
-#             if user.is_superuser or user.is_staff:
-#                 # 1. Admin / Staff login -> allmembers page
-#                 return redirect('allmembers')
-#             else:
-#                 # 2. Normal User login -> members page
-#                 return redirect('members')
-#         else:
-#             messages.error(request, 'Invalid username or password!')
-#     data = {'title': 'Login - Members Portal'}
-#     return render(request, 'login.html',data)
-
-
 def Usersignup(request):
     if request.user.is_authenticated:
         return redirect('members')
@@ -238,6 +209,7 @@ def add_member(request):
         name = request.POST.get('name')
         mobile = request.POST.get('mobile')
         location = request.POST.get('location')
+        blood = request.POST.get('blood')
         
 
         # CHECK: Entire Database me Mobile exist karta hai ya nahi? (Anwar ya kisi ne bhi add kiya ho)
@@ -249,6 +221,7 @@ def add_member(request):
                 'entered_name': name,
                 'entered_mobile': mobile,
                 'entered_location': location,
+                'entered_blood':blood,
                 "Member": Member,
             })
 
@@ -258,6 +231,7 @@ def add_member(request):
             name=name,
             mobile=mobile,
             location=location,
+            blood_donate=blood,
             zimmedar_name=zimmedar,
             created_by=request.user
         )
@@ -285,6 +259,7 @@ def edit_member(request, pk):
         member.name = request.POST.get('name')
         member.mobile = request.POST.get('mobile')
         member.location = request.POST.get('location')
+        member.blood_donate = request.POST.get('blood')
         member.save()
         return redirect('members')
 
@@ -340,6 +315,7 @@ def export_members_excel(request):
             member.name,
             member.mobile,
             member.location,
+            member.blood_donate,
             joined_date,
             member.zimmedar_name,
         ])

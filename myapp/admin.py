@@ -19,10 +19,10 @@ admin.site.register(Profile)
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
     # Admin table me dikhne wale columns
-    list_display = ('name', 'mobile', 'location', 'zimmedar_name', 'joined_at')
+    list_display = ('name', 'mobile', 'location', 'blood_donate', 'zimmedar_name', 'joined_at')
     
     # Search bar enable karne ke liye
-    search_fields = ('name', 'mobile', 'zimmedar_name')
+    search_fields = ('name', 'mobile', 'zimmedar_name', 'blood_donate')
     
     # Filter sidebar enable karne ke liye
     list_filter = ('location', 'joined_at')

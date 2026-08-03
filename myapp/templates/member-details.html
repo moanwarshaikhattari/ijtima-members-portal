@@ -47,14 +47,14 @@
             </div>
           </div>
 
-          <section class="row g-3">
+          <section class="row g-3 mb-lg-0 mb-5">
             <div class="col-12 col-xl-12">
               <form id="contactForm" method="POST" action="{% url 'memberdetails' member.id %}" class="panel">
                 {% csrf_token %}
                 <div class="panel-header">
                   <div>
-                    <h2 class="h5 mb-1 section-title"><i class="bi bi-pencil-square" aria-hidden="true"></i><span>Update Member Information</span></h2>
-                    <p class="text-muted mb-0">Registered by Zimmedar: <strong>{{ member.zimmedar_name }}</strong></p>
+                    <!-- <h2 class="h5 mb-1 section-title"><i class="bi bi-pencil-square" aria-hidden="true"></i><span>Update Member Information</span></h2> -->
+                    <p class="text-muted mb-0">Added by Zimmedar: <strong>{{ member.zimmedar_name }}</strong></p>
                   </div>
                 </div>
 
@@ -77,12 +77,7 @@
                   <div class="col-md-6">
                     <label class="form-label" for="location">Location*</label>
                     <select class="form-select form-control mb-0" id="location" name="location">
-                      <!-- <option value="">--Select Location--</option> -->
-                      <!-- <option value="Belapur" {% if member.location == "Belapur" %}selected{% endif %}>Belapur</option>
-                      <option value="Kopar Khairne" {% if member.location == "Kopar Khairne" %}selected{% endif %}>Kopar Khairne</option>
-                      <option value="Nerul" {% if member.location == "Nerul" %}selected{% endif %}>Nerul</option>
-                      <option value="Kharghar" {% if member.location == "Kharghar" %}selected{% endif %}>Kharghar</option>
-                      <option value="Vashi" {% if member.location == "Vashi" %}selected{% endif %}>Vashi</option> -->
+                      <option value="">--Select Location--</option>
                       {% for key, value in Member.LOCATION_CHOICES %}
                           <option value="{{ key }}" {% if member.location == key %}selected{% endif %}>
                               {{ value }}
@@ -91,9 +86,22 @@
                     </select>
                     <div class="error" id="errorLocation"></div>
                   </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label" for="blood">Blood Donate*</label>
+                    <select class="form-select form-control mb-0" id="blood" name="blood">
+                      <option value="">--Select Blood Donate--</option>
+                      {% for key, value in Member.BLOOD_CHOICES %}
+                          <option value="{{ key }}" {% if member.blood_donate == key %}selected{% endif %}>
+                              {{ value }}
+                          </option>
+                      {% endfor %}
+                    </select>
+                    <div class="error" id="errorBlood"></div>
+                  </div>
                 </div>
 
-                <div class="d-flex flex-wrap justify-content-end gap-2 mt-lg-0 mt-3">
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-3">
                   <a href="{% url 'members' %}" class="btn btn-outline-secondary" id="cancelBtn">Cancel</a>
                   <button class="btn btn-primary" type="submit" id="submitBtn"><i class="bi bi-check2-circle" aria-hidden="true"></i> Save Changes</button>
                 </div>
@@ -119,8 +127,19 @@
           searchEnabled: true,
           itemSelectText: '',
           shouldSort: false,
-          placeholder: true,
+          placeholder: false,
           placeholderValue: 'Select Location',
+        });
+      }
+
+      const bloodSelect = document.getElementById('blood');
+      if (bloodSelect) {
+        new Choices(bloodSelect, {
+          searchEnabled: true,
+          itemSelectText: '',
+          shouldSort: false,
+          placeholder: false,
+          placeholderValue: 'Select blood donate',
         });
       }
 
@@ -134,16 +153,19 @@
           const errName = document.getElementById("errorName");
           const errMobile = document.getElementById("errorMobile");
           const errLocation = document.getElementById("errorLocation");
+          const errBlood = document.getElementById("errorBlood");
 
           if (errName) errName.innerText = "";
           if (errMobile) errMobile.innerText = "";
           if (errLocation) errLocation.innerText = "";
+          if (errBlood) errLocation.innerText = "";
 
           let valid = true;
 
           const name = document.querySelector("[name='name']").value.trim();
           const mobile = document.querySelector("[name='mobile']").value.trim();
           const location = document.querySelector("[name='location']").value.trim();
+          const blood = document.querySelector("[name='blood']").value.trim();
 
           if (name === "") {
             if (errName) errName.innerText = "Name is required.";
@@ -157,6 +179,11 @@
 
           if (location === "") {
             if (errLocation) errLocation.innerText = "Location is required.";
+            valid = false;
+          }
+
+          if (blood === "") {
+            document.getElementById("errorBlood").innerText = "Select Blood Donate YRS or NO";
             valid = false;
           }
 
@@ -177,6 +204,7 @@
           if (document.getElementById("errorName")) document.getElementById("errorName").innerText = "";
           if (document.getElementById("errorMobile")) document.getElementById("errorMobile").innerText = "";
           if (document.getElementById("errorLocation")) document.getElementById("errorLocation").innerText = "";
+          if (document.getElementById("errorLocation")) document.getElementById("errorBlood").innerText = "";
         });
       }
     });
