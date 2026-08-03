@@ -104,24 +104,28 @@
   <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'assets/js/main.js' %}"></script>
   <script>
-    function togglePasswordVisibility(passwordId, iconId) {
-      const passwordInput = document.getElementById(passwordId);
-      const toggleIcon = document.getElementById(iconId);
+  function togglePasswordVisibility(passwordId, iconId) {
+    const passwordInput = document.getElementById(passwordId);
+    const toggleIcon = document.getElementById(iconId);
 
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('bi-eye');
-        toggleIcon.classList.add('bi-eye-slash');
-      } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('bi-eye-slash');
-        toggleIcon.classList.add('bi-eye');
-      }
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.classList.remove('bi-eye');
+      toggleIcon.classList.add('bi-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.classList.remove('bi-eye-slash');
+      toggleIcon.classList.add('bi-eye');
     }
+  }
 
-    document.getElementById("contactForm").onsubmit = function (e) {
+  const contactForm = document.getElementById("contactForm");
+  
+  if (contactForm) {
+    contactForm.addEventListener("submit", function (e) {
       const submitBtn = document.getElementById('submitBtn');
-      // Clear previous errors
+      
+      // Clear previous error messages
       document.getElementById("errorName").innerText = "";
       document.getElementById("errorMobile").innerText = "";
       document.getElementById("errorEmail").innerText = "";
@@ -163,18 +167,19 @@
         valid = false;
       }
 
-      if (password === "") {
+      if (password.length < 6) {
         document.getElementById("errorPassword").innerText = "Password must be at least 6 characters.";
         valid = false;
       }
-      // If form is valid, show processing
-      if (valid) {
-        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
-        submitBtn.disabled = true;
+
+      if (!valid) {
+        e.preventDefault(); // Validation fail hone par submission rokein
       } else {
-        e.preventDefault(); // stop form from submitting
+        // Text change karein bina button ko disable kiye taaki POST name='send_otp' Django ko mile
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
       }
-    };
+    });
+  }
 </script>
 </body>
 </html>
