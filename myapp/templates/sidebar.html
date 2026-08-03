@@ -1,0 +1,58 @@
+{% load static %}
+<div class="sidebar-backdrop" data-sidebar-close></div>
+<aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
+    <div class="sidebar-header">
+        <a class="brand-mark" href="{% url 'members' %}" aria-label="adminHMD dashboard">
+            <span class="b"><img style="vertical-align: baseline !important;" src="/static/assets/images/madina.png" alt="midana logo" width="50px"></span>
+            <span class="brand-copy">
+            <span class="brand-title">Ijtima</span>
+            <span class="brand-subtitle">Members Portal</span>
+            </span>
+        </a>
+    </div>
+    {% if request.user.is_superuser or request.user.is_staff %}
+        <nav class="sidebar-nav">
+            <a class="nav-link {% if request.path == '/allmemberslist/' %}active{% endif %}" href="{% url 'allmembers' %}"
+            {% if request.path == '/allmemberslist/' %}aria-current="page"{% endif %}>
+                <span class="nav-icon">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                </span>
+                <span class="nav-text">All Members</span>
+            </a>
+
+            <a class="nav-link {% if request.path == '/allzimmedarlist/' %}active{% endif %}" href="{% url 'allzimmedar' %}"
+            {% if request.path == '/allzimmedarlist/' %}aria-current="page"{% endif %}>
+                <span class="nav-icon">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                </span>
+                <span class="nav-text">All Zimmedar</span>
+            </a>
+        </nav>
+    {% else %}
+        <nav class="sidebar-nav">
+            <a class="nav-link {% if request.path == '/members/' %}active{% endif %}" href="{% url 'members' %}"
+            {% if request.path == '/members/' %}aria-current="page"{% endif %}>
+                <span class="nav-icon">
+                    <i class="bi bi-person-plus" aria-hidden="true"></i>
+                </span>
+                <span class="nav-text">Members</span>
+            </a>
+
+            <a class="nav-link {% if request.path == '/members/add/' %}active{% endif %}" href="{% url 'addmember' %}"
+            {% if request.path == '/members/add/' %}aria-current="page"{% endif %}>
+                <span class="nav-icon">
+                    <i class="bi bi-person-plus" aria-hidden="true"></i>
+                </span>
+                <span class="nav-text">Add Member</span>
+            </a>
+
+            <a class="nav-link {% if request.path == '/profile/' %}active{% endif %}" href="{% url 'profile' %}"
+            {% if request.path == '/profile/' %}aria-current="page"{% endif %}>
+                <span class="nav-icon">
+                    <i class="bi bi-person-badge" aria-hidden="true"></i>
+                </span>
+                <span class="nav-text">Profile</span>
+            </a>
+        </nav>
+    {% endif %}
+</aside>

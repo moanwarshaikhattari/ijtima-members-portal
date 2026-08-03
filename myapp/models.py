@@ -1,0 +1,47 @@
+# myapp/models.py
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    department = models.CharField(max_length=100, blank=True, null=True)
+    location = models.CharField(max_length=100, blank=True, null=True)
+    mobile = models.CharField(max_length=15, blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+# Automatic profile creation signal
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    instance.profile.save()
+
+
+class Member(models.Model):
+    LOCATION_CHOICES = [
+        ('Belapur', 'Belapur'),
+        ('Kopar Khairne', 'Kopar Khairne'),
+        ('Nerul', 'Nerul'),
+        ('Kharghar', 'Kharghar'),
+        ('Vashi', 'Vashi'),
+    ]
+
+    name = models.CharField(max_length=100)
+    mobile = models.CharField(max_length=10)
+    location = models.CharField(max_length=50, choices=LOCATION_CHOICES)
+    
+    # Member add karne wale logged-in user ka Full Name automatically save hoga
+    zimmedar_name = models.CharField(max_length=100)
+    
+    # Optional: Logged-in user ki Foreign Key reference (for better record tracking)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    joined_at = models.DateField(auto_now_add=True)
+
+    # def __str__(self):
+    #     return self.name
+    def __str__(self):
+        return f"{self.name} ({self.mobile})"

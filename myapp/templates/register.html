@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "head.html" %}
+  <title>{{ title }}</title>
+  <style>
+    .error{
+      font-size:12px;
+      margin-top:5px;
+    }
+  </style>
+</head>
+
+<body class="auth-body">
+  <button class="icon-button theme-toggle auth-theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
+    <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
+  </button>
+  <main class="auth-page">
+    <section class="auth-card">
+      <a class="auth-brand">
+        <span><img style="vertical-align: baseline !important;" src="{% static 'assets/images/madina.png' %}" alt="madina logo" width="50px"></span>
+        <span><strong>New Zimmedar Register</strong><small>Register in for add Ijtima Members</small></span>
+      </a>
+      <div class="auth-visual"><img src="{% static 'assets/images/di-logo.png' %}" alt="Dawate Islami"></div>
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% if otp_sent %}
+        <!-- STEP 2: OTP VERIFICATION INPUT -->
+        <form class="needs-validation" method="POST" action="{% url 'register' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label" for="registerOtp">Enter 6-Digit OTP sent to <strong>{{ email }}</strong></label>
+            <input class="form-control text-center fs-4" id="registerOtp" name="otp" type="text" maxlength="6" required autofocus>
+            <div class="invalid-feedback">OTP is required.</div>
+          </div>
+          <button class="btn btn-success w-100 mb-2" type="submit" name="verify_otp">
+            <i class="bi bi-shield-check" aria-hidden="true"></i> Verify & Finish Registration
+          </button>
+          <a href="{% url 'register' %}" class="btn btn-outline-secondary w-100 btn-sm">Resend or Edit Info</a>
+        </form>
+      {% else %}
+        <!-- STEP 1: INITIAL REGISTRATION INPUTS -->
+        <form id="contactForm" method="POST" action="{% url 'register' %}">
+          {% csrf_token %}
+          <div class="mb-1">
+            <label class="form-label" for="registerName">Full Name*</label>
+            <input class="form-control" id="registerName" name="name" type="text" placeholder="Enter First Name & Last Name" oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')">
+            <div class="text-danger error" id="errorName"></div>
+          </div>
+          <div class="mb-1">
+            <label class="form-label" for="registerEmail">Email Address*</label>
+            <input class="form-control" id="registerEmail" name="email" type="email" placeholder="Enter Valid Email ID">
+            <div class="text-danger error" id="errorEmail"></div>
+          </div>
+          <!-- MOBILE NUMBER FIELD -->
+          <div class="mb-1">
+            <label class="form-label" for="registerMobile">Mobile Number*</label>
+            <input class="form-control" id="registerMobile" name="mobile" type="number" placeholder="Enter 10 Digit Mobile Number"
+              maxlength="10"
+              inputmode="numeric"
+              pattern="\d{10}"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
+            <div class="text-danger error" id="errorMobile"></div>
+          </div>
+          <div class="mb-1">
+            <label class="form-label" for="registerDept">Department*</label>
+            <input class="form-control" id="registerDept" name="department" type="text" placeholder="Enter Department">
+            <div class="text-danger error" id="errorDept"></div>
+          </div>
+          <div class="mb-1">
+            <label class="form-label" for="registerLocation">Location*</label>
+            <input class="form-control" id="registerLocation" name="location" type="text" placeholder="Enter Location">
+            <div class="text-danger error" id="errorLocation"></div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label" for="registerPassword">Password*</label>
+            <div class="input-group">
+              <input class="form-control" id="registerPassword" name="password" type="password" placeholder="Enter Password at least 6 Characters" minlength="6">
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('registerPassword', 'toggleIconRegister')">
+                <i class="bi bi-eye" id="toggleIconRegister" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="text-danger error" id="errorPassword"></div>
+          </div>
+          <button class="btn btn-primary w-100" type="submit" name="send_otp" id="submitBtn">
+            <i class="bi bi-envelope-paper" aria-hidden="true"></i> Send OTP & Continue
+          </button>
+        </form>
+      {% endif %}
+      
+      <div class="auth-footer mt-2">Already have an account? <a href="{% url 'login' %}">Sign in</a></div>
+    </section>
+  </main>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script>
+    function togglePasswordVisibility(passwordId, iconId) {
+      const passwordInput = document.getElementById(passwordId);
+      const toggleIcon = document.getElementById(iconId);
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+      }
+    }
+
+    document.getElementById("contactForm").onsubmit = function (e) {
+      const submitBtn = document.getElementById('submitBtn');
+      // Clear previous errors
+      document.getElementById("errorName").innerText = "";
+      document.getElementById("errorMobile").innerText = "";
+      document.getElementById("errorEmail").innerText = "";
+      document.getElementById("errorDept").innerText = "";
+      document.getElementById("errorLocation").innerText = "";
+      document.getElementById("errorPassword").innerText = "";
+
+      let valid = true;
+
+      const name = document.querySelector("[name='name']").value.trim();
+      const mobile = document.querySelector("[name='mobile']").value.trim();
+      const email = document.querySelector("[name='email']").value.trim();
+      const department = document.querySelector("[name='department']").value.trim();
+      const location = document.querySelector("[name='location']").value.trim();
+      const password = document.querySelector("[name='password']").value.trim();
+
+      if (name === "") {
+        document.getElementById("errorName").innerText = "Name is required.";
+        valid = false;
+      }
+
+      if (!/^\d{10}$/.test(mobile)) {
+        document.getElementById("errorMobile").innerText = "Mobile number must be 10 digits.";
+        valid = false;
+      }
+
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        document.getElementById("errorEmail").innerText = "Enter a valid email address.";
+        valid = false;
+      }
+
+      if (department === "") {
+        document.getElementById("errorDept").innerText = "Department is required.";
+        valid = false;
+      }
+
+      if (location === "") {
+        document.getElementById("errorLocation").innerText = "Location is required.";
+        valid = false;
+      }
+
+      if (password === "") {
+        document.getElementById("errorPassword").innerText = "Password must be at least 6 characters.";
+        valid = false;
+      }
+      // If form is valid, show processing
+      if (valid) {
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        submitBtn.disabled = true;
+      } else {
+        e.preventDefault(); // stop form from submitting
+      }
+    };
+</script>
+</body>
+</html>

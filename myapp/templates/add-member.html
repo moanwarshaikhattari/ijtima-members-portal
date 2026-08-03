@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "head.html" %}
+  <title>{{ title }}</title>
+  <style>
+     .error{
+      font-size:12px;
+      margin-top:5px;
+    }
+    .choices__inner{
+      background-color: #ffff;
+      border-radius: 6px;
+      padding-bottom:0;
+    }
+    .choices{
+      margin-bottom: 3px;
+    }
+    
+  </style>
+</head>
+
+<body>
+  <div class="admin-shell">
+
+    {% include "sidebar.html" %}
+
+    <div class="admin-main">
+      {% include "header.html" %}
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+              <div>
+                <!-- <p class="eyebrow mb-1">Management</p> -->
+                <h1 class="h3 mb-1">Add Member Information</h1>
+                <!-- <p class="text-muted mb-0">Create a new user account with role and team assignments.</p> -->
+              </div>
+            </div>
+            <div class="heading-actions"><a class="btn btn-outline-secondary btn-sm" href="{% url 'members' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Members</a></div>
+          </div>
+
+          <section class="row g-3 mb-lg-0 mb-5">
+            <div class="col-12 col-xl-12">
+              <div class="col-12 col-xl-12">
+              
+              <form id="contactForm" method="POST" action="{% url 'addmember' %}" class="panel">
+                {% csrf_token %}
+                <!-- <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-person-plus" aria-hidden="true"></i><span>Add Member Information</span></h2>
+                    <p class="text-muted mb-0">Create a Member Information with validated fields.</p>
+                  </div>
+                </div> -->
+                
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label" for="firstName">Full Name*</label>
+                    <input class="form-control" id="firstName" name="name" type="text" placeholder="Enter First Name & Last Name" oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')">
+                    <div class="text-danger error" id="errorName"></div>
+                  </div>
+                  
+                  <!-- <div class="col-md-6">
+                    <label class="form-label" for="phone">Mobile Number*</label>
+                    <input class="form-control" id="phone" name="mobile" type="text" placeholder="Enter 10 Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
+                    <div class="text-danger error" id="errorMobile"></div>
+                  </div> -->
+                  <div class="col-md-6">
+                    <label class="form-label" for="phone">Mobile Number*</label>
+                    <input class="form-control" id="phone" name="mobile" type="text" value="{{ entered_mobile }}" placeholder="Enter 10 Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
+                    
+                    {% if error_mobile %}
+                      <div class="text-danger error mt-1" id="errorMobile">{{ error_mobile }}</div>
+                    {% else %}
+                      <div class="text-danger error" id="errorMobile"></div>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <label class="form-label" for="location">Location*</label>
+                    <select class="form-select form-control mb-0" id="location" name="location">
+                      <option value="">--Select Location--</option>
+                      <option value="Belapur">Belapur</option>
+                      <option value="Kopar Khairne">Kopar Khairne</option>
+                      <option value="Nerul">Nerul</option>
+                      <option value="Kharghar">Kharghar</option>
+                      <option value="Vashi">Vashi</option>
+                    </select>
+                    <div class="text-danger error" id="errorLocation"></div>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-lg-0 mt-3">
+                  <button type="button" class="btn btn-outline-secondary" id="cancelBtn">Cancel</button>
+                  <button class="btn btn-primary" type="submit" id="submitBtn"><i class="bi bi-person-check" aria-hidden="true"></i> Create Member</button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
+      {% include "footer-navbar.html" %}
+      <!-- {% include "footer.html" %} -->
+    </div>
+  </div>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <script>
+    document.getElementById("contactForm").onsubmit = function (e) {
+      const submitBtn = document.getElementById('submitBtn');
+      // Clear previous errors
+      document.getElementById("errorName").innerText = "";
+      document.getElementById("errorMobile").innerText = "";
+      document.getElementById("errorLocation").innerText = "";
+
+      let valid = true;
+
+      const name = document.querySelector("[name='name']").value.trim();
+      const mobile = document.querySelector("[name='mobile']").value.trim();
+      const location = document.querySelector("[name='location']").value.trim();
+
+      if (name === "") {
+        document.getElementById("errorName").innerText = "Name is required.";
+        valid = false;
+      }
+
+      if (!/^\d{10}$/.test(mobile)) {
+        document.getElementById("errorMobile").innerText = "Mobile number must be 10 digits.";
+        valid = false;
+      }
+
+      if (location === "") {
+        document.getElementById("errorLocation").innerText = "Location is required.";
+        valid = false;
+      }
+
+      // If form is valid, show processing
+      if (valid) {
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        submitBtn.disabled = true;
+      } else {
+        e.preventDefault(); // stop form from submitting
+      }
+    };
+
+    document.getElementById("cancelBtn").addEventListener("click", function () {
+      const form = document.getElementById("contactForm");
+
+      // Reset all input values
+      form.reset();
+
+      // Clear error messages
+      document.getElementById("errorName").innerText = "";
+      document.getElementById("errorMobile").innerText = "";
+      document.getElementById("errorLocation").innerText = "";
+
+      // Remove Bootstrap validation classes (if you're using them)
+      // form.querySelectorAll(".form-control, .form-select").forEach(function (field) {
+      //     field.classList.remove("is-valid", "is-invalid");
+      // });
+    });
+
+    // serachable dropdown
+    new Choices('#location', {
+      searchEnabled: true,
+      itemSelectText: '',
+      shouldSort: false,
+      placeholder: false,
+      placeholderValue: 'Select Location',
+    });
+
+</script>
+</body>
+</html>

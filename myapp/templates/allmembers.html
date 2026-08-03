@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "head.html" %}
+  <title>{{ title }}</title>
+</head>
+
+<body>
+  <div class="admin-shell">
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    {% include "sidebar.html" %}
+
+    <div class="admin-main">
+      {% include "header.html" %}
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+              <div>
+                <!-- <p class="eyebrow mb-1">Management</p> -->
+                <h1 class="h3 mb-1">All Members List</h1>
+                <!-- <p class="text-muted mb-0">Review accounts, roles, account status, and team ownership.</p> -->
+              </div>
+            </div>
+            <!-- <div class="heading-actions">
+              <a class="btn btn-outline-secondary btn-sm" href="javascript:void(0)">
+                <i class="bi bi-download" aria-hidden="true"></i> Export</a>
+              <a class="btn btn-primary btn-sm" href="{% url 'addmember' %}">
+                <i class="bi bi-person-plus" aria-hidden="true"></i> Add Member</a>
+            </div> -->
+            <div class="heading-actions">
+              <!-- Dynamic Export Excel URL -->
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'export_members_excel' %}">
+                <i class="bi bi-download" aria-hidden="true"></i> Download Excel
+              </a>
+              <!-- <a class="btn btn-primary btn-sm" href="{% url 'addmember' %}">
+                <i class="bi bi-person-plus" aria-hidden="true"></i> Add Member
+              </a> -->
+            </div>
+          </div>
+
+          <section class="panel mt-3">
+            <div class="panel-header mb-2">
+              <!-- <div>
+                <h2 class="h5 mb-1 section-title"><i class="bi bi-table" aria-hidden="true"></i><span>All Members List</span></h2>
+                <p class="text-muted mb-0">Search, review, and manage members.</p>
+              </div> -->
+              <div class="d-flex flex-wrap gap-2">
+                <input class="form-control form-control-sm table-search" type="search" placeholder="Search Member" data-table-search="usersTable" aria-label="Search users">
+                <!-- <a class="btn btn-primary btn-sm" href="add-user.html">
+                  <i class="bi bi-person-plus" aria-hidden="true"></i> Add User</a> -->
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-middle mb-0" id="usersTable" data-searchable-table>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Joined Date</th>
+                    <th scope="col">Zimmedar Name</th>
+                    <!-- <th scope="col" class="text-end">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for member in members %}
+                  <tr>
+                    <td>
+                      <p class="fw-semibold mb-0">{{ member.name|title }}</p>
+                    </td>
+                    <td><a href="tel:+91{{ member.mobile }}">{{ member.mobile }}</a></td>
+                    <td>{{ member.location }}</td>
+                    <td>{{ member.joined_at|date:"d M Y" }}</td>
+                    <td>{{ member.zimmedar_name|title }}</td>
+                    <!-- <td class="text-end">
+                      
+                      <a class="btn btn-light btn-sm btn-text" href="{% url 'memberdetails' member.id %}">
+                        <i class="bi bi-pencil-square"></i> View / Edit
+                      </a>
+                    </td> -->
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No members found in database.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex flex-sm-row align-items-sm-center justify-content-between gap-3 mt-3">
+
+              <p class="text-muted small mb-0" id="tableInfo"></p>
+              <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item">
+                        <a href="#" class="page-link" id="prevBtn">
+                            Previous
+                        </a>
+                    </li>
+                    <li class="page-item active">
+                        <span class="page-link" id="pageNumber">
+                            1
+                        </span>
+                    </li>
+                    <li class="page-item">
+                        <a href="#" class="page-link" id="nextBtn">
+                            Next
+                        </a>
+                    </li>
+                  </ul>
+              </nav>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- {% include "footer.html" %} -->
+    </div>
+  </div>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const rowsPerPage = 8;
+
+        const table = document.getElementById("usersTable");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const pageNumber = document.getElementById("pageNumber");
+        const tableInfo = document.getElementById("tableInfo");
+
+        let currentPage = 1;
+        const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+        function showPage(page) {
+
+            rows.forEach(row => row.style.display = "none");
+
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.slice(start, end).forEach(row => {
+                row.style.display = "";
+            });
+
+            pageNumber.textContent = page;
+
+            const showingStart = rows.length === 0 ? 0 : start + 1;
+            const showingEnd = Math.min(end, rows.length);
+
+            tableInfo.textContent =
+                `Showing ${showingStart} to ${showingEnd} of ${rows.length} Data`;
+
+            if (page === 1) {
+                prevBtn.parentElement.classList.add("disabled");
+            } else {
+                prevBtn.parentElement.classList.remove("disabled");
+            }
+
+            if (page === totalPages) {
+                nextBtn.parentElement.classList.add("disabled");
+            } else {
+                nextBtn.parentElement.classList.remove("disabled");
+            }
+        }
+
+        prevBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        nextBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+
+        showPage(currentPage);
+
+    });
+  </script>
+  {% if whatsapp_url %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 200ms Delay ensures browser fully loads DOM before triggering external redirect
+        setTimeout(function() {
+            var url = "{{ whatsapp_url|safe }}";
+            window.open(url, '_blank');
+        }, 200);
+    });
+  </script>
+  {% endif %}
+</body>
+</html>

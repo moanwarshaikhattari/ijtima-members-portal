@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "head.html" %}
+  <title>{{ title }}</title>
+</head>
+
+<body>
+  <div class="admin-shell">
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    {% include "sidebar.html" %}
+
+    <div class="admin-main">
+      {% include "header.html" %}
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+              <div>
+                <h1 class="h3 mb-1">All Zimmedar List</h1>
+              </div>
+            </div>
+            <div class="heading-actions">
+              <!-- Dynamic Export Excel URL -->
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'export_users_excel' %}">
+                <i class="bi bi-download" aria-hidden="true"></i> Download Excel
+              </a>
+            </div>
+          </div>
+
+          <section class="panel mt-3">
+            <div class="panel-header mb-2">
+              <div class="d-flex flex-wrap gap-2">
+                <input class="form-control form-control-sm table-search" type="search" placeholder="Search Member" data-table-search="usersTable" aria-label="Search users">
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table align-middle mb-0" id="usersTable" data-searchable-table>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Date Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for user_obj in users_list %}
+                  <tr>
+                    <td>
+                      <p class="fw-semibold mb-0">
+                        {% if user_obj.get_full_name %}
+                          {{ user_obj.get_full_name|title }}
+                        {% else %}
+                          {{ user_obj.username }}
+                        {% endif %}
+                      </p>
+                      <!-- <small class="text-muted">@{{ user_obj.username }}</small> -->
+                    </td>
+                    <td>
+                      {% if user_obj.profile.mobile %}
+                        <a href="tel:+91{{ user_obj.profile.mobile }}">{{ user_obj.profile.mobile }}</a>
+                      {% else %}
+                        <span class="text-muted">-</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ user_obj.email|default:"-" }}</td>
+                    <td>{{ user_obj.profile.location|default:"-" }}</td>
+                    <td>{{ user_obj.profile.department|default:"-" }}</td>
+                    <td>{{ user_obj.date_joined|date:"d M Y" }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No registered users found in database.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex flex-sm-row align-items-sm-center justify-content-between gap-3 mt-3">
+              <p class="text-muted small mb-0" id="tableInfo"></p>
+              <nav>
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item">
+                    <a href="#" class="page-link" id="prevBtn">Previous</a>
+                  </li>
+                  <li class="page-item active">
+                    <span class="page-link" id="pageNumber">1</span>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link" id="nextBtn">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rowsPerPage = 8;
+        const table = document.getElementById("usersTable");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr")).filter(row => !row.querySelector("td[colspan]"));
+
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const pageNumber = document.getElementById("pageNumber");
+        const tableInfo = document.getElementById("tableInfo");
+
+        let currentPage = 1;
+        const totalPages = Math.ceil(rows.length / rowsPerPage) || 1;
+
+        function showPage(page) {
+            rows.forEach(row => row.style.display = "none");
+
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.slice(start, end).forEach(row => {
+                row.style.display = "";
+            });
+
+            pageNumber.textContent = page;
+
+            const showingStart = rows.length === 0 ? 0 : start + 1;
+            const showingEnd = Math.min(end, rows.length);
+
+            tableInfo.textContent = `Showing ${showingStart} to ${showingEnd} of ${rows.length} Data`;
+
+            if (page === 1) {
+                prevBtn.parentElement.classList.add("disabled");
+            } else {
+                prevBtn.parentElement.classList.remove("disabled");
+            }
+
+            if (page === totalPages) {
+                nextBtn.parentElement.classList.add("disabled");
+            } else {
+                nextBtn.parentElement.classList.remove("disabled");
+            }
+        }
+
+        prevBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        nextBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+
+        showPage(currentPage);
+    });
+  </script>
+
+  {% if whatsapp_url %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function() {
+            var url = "{{ whatsapp_url|safe }}";
+            window.open(url, '_blank');
+        }, 200);
+    });
+  </script>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "head.html" %}
+  <title>{{ title }}</title>
+  <style>
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      background-color: #f8f9fa;
+      border: 3px solid #212529;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .profile-photo h2 {
+      margin: 0;
+      color: #6c757d;
+      font-weight: 600;
+    }
+    .profile-cover img {
+      justify-self: center;
+    }
+    .error{
+      font-size:12px;
+      margin-top:5px;
+    }
+    @media (max-width: 768px) {
+      .profile-cover img {
+        width: 300px !important;
+        justify-self: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-shell">
+    {% include "sidebar.html" %}
+
+    <div class="admin-main">
+       {% include "header.html" %}
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
+              <div>
+                <h1 class="h3 mb-1">Zimmedar Profile</h1>
+              </div>
+            </div>
+          </div>
+
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <section class="row justify-content-center mb-lg-0 mb-5">
+            <div class="col-12 col-xl-4">
+              <div class="panel h-100 text-center profile-card">
+                <div class="profile-cover"><img src="{% static 'assets/images/di-logo.png' %}" alt="Dawate Islami"></div>
+                <div class="avatar-img avatar-xl profile-photo d-flex justify-content-le align-items-center mx-auto">
+                  <h2 class="mb-0 text-secondary">{{ user.first_name|slice:":2"|upper }}</h2>
+                </div>
+                <h2 class="h5 mt-3 mb-1">{{ user.first_name }}</h2>
+                
+                <div class="info-list mt-4 text-start">
+                  <div><span>Email</span><strong>{{ user.email }}</strong></div>
+                  <div><span>Mobile</span><strong>{{ user.profile.mobile|default:"N/A" }}</strong></div>
+                  <div><span>Department</span><strong>{{ user.profile.department|default:"N/A" }}</strong></div>
+                  <div><span>Location</span><strong>{{ user.profile.location|default:"N/A" }}</strong></div>
+                </div>
+                <div>
+                  <div class="mt-3">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#confirmModal">Edit Profile</button>
+                  </div>
+                  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h2 class="modal-title h5" id="confirmModalLabel">Edit Profile</h2>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="col-12 col-xl-12">
+                            <form id="contactForm" class="panel" method="POST" action="{% url 'profile' %}" style="text-align: left !important;">
+                              {% csrf_token %}
+                              <!-- <div class="panel-header">
+                                <div>
+                                  <h2 class="h5 mb-1 section-title"><i class="bi bi-person-gear" aria-hidden="true"></i><span>Profile Settings</span></h2>
+                                  <p class="text-muted mb-0">Update your account profile and contact details.</p>
+                                </div>
+                              </div> -->
+                              <div class="row g-3">
+                                <div class="col-md-6">
+                                  <label class="form-label" for="profileName">Full Name*</label>
+                                  <input class="form-control" id="profileName" name="name" type="text" placeholder="Enter First Name & Last name" value="{{ user.first_name }}" oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')">
+                                  <div class="text-danger error" id="errorName"></div>
+                                </div>
+                                <div class="col-md-6">
+                                  <label class="form-label" for="profileEmail">Email*</label>
+                                  <input class="form-control" id="profileEmail" name="email" type="email" placeholder="Enter Email ID" value="{{ user.email }}">
+                                  <div class="text-danger error" id="errorEmail"></div>
+                                </div>
+                                <div class="col-md-6">
+                                  <label class="form-label" for="profileMobile">Mobile Number*</label>
+                                  <input class="form-control" id="profileMobile" name="mobile" type="number" placeholder="Enter Mobile Number" value="{{ user.profile.mobile|default:'' }}"
+                                    maxlength="10"
+                                    inputmode="numeric"
+                                    pattern="\d{10}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
+                                  <div class="text-danger error" id="errorMobile"></div>
+                                </div>
+                                <div class="col-md-6">
+                                  <label class="form-label" for="profileDept">Department*</label>
+                                  <input class="form-control" id="profileDept" name="department" type="text" placeholder="Enter Department" value="{{ user.profile.department|default:'' }}">
+                                  <div class="text-danger error" id="errorDept"></div>
+                                </div>
+                                <div class="col-md-6">
+                                  <label class="form-label" for="profileLocation">Location*</label>
+                                  <input class="form-control" id="profileLocation" name="location" type="text" placeholder="Enter Location" value="{{ user.profile.location|default:'' }}">
+                                  <div class="text-danger error" id="errorLocation"></div>
+                                </div>
+                                <div class="col-md-6 mt-lg-5 mt-3">
+                                  <div class="d-flex justify-content-end">
+                                <button class="btn btn-primary" type="submit" id="submitBtn"><i class="bi bi-check2-circle" aria-hidden="true"></i> Save Profile</button>
+                              </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                        <!-- <div class="modal-footer">
+                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="button" class="btn btn-primary">Confirm</button>
+                        </div> -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+      {% include "footer-navbar.html" %}
+    </div>
+  </div>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <script>
+    document.getElementById("contactForm").onsubmit = function (e) {
+      const submitBtn = document.getElementById('submitBtn');
+      // Clear previous errors
+      document.getElementById("errorName").innerText = "";
+      document.getElementById("errorMobile").innerText = "";
+      document.getElementById("errorEmail").innerText = "";
+      document.getElementById("errorDept").innerText = "";
+      document.getElementById("errorLocation").innerText = "";
+
+      let valid = true;
+
+      const name = document.querySelector("[name='name']").value.trim();
+      const mobile = document.querySelector("[name='mobile']").value.trim();
+      const email = document.querySelector("[name='email']").value.trim();
+      const department = document.querySelector("[name='department']").value.trim();
+      const location = document.querySelector("[name='location']").value.trim();
+
+      if (name === "") {
+        document.getElementById("errorName").innerText = "Name is required.";
+        valid = false;
+      }
+
+      if (!/^\d{10}$/.test(mobile)) {
+        document.getElementById("errorMobile").innerText = "Mobile number must be 10 digits.";
+        valid = false;
+      }
+
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        document.getElementById("errorEmail").innerText = "Enter a valid email address.";
+        valid = false;
+      }
+
+      if (department === "") {
+        document.getElementById("errorDept").innerText = "Department is required.";
+        valid = false;
+      }
+
+      if (location === "") {
+        document.getElementById("errorLocation").innerText = "Location is required.";
+        valid = false;
+      }
+
+      // If form is valid, show processing
+      if (valid) {
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        submitBtn.disabled = true;
+      } else {
+        e.preventDefault(); // stop form from submitting
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "head.html" %}
+  <title>{{ title }}</title>
+</head>
+
+<body class="auth-body">
+  <button class="icon-button theme-toggle auth-theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
+    <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
+  </button>
+  <main class="auth-page">
+    <section class="auth-card">
+      <a class="auth-brand">
+        <span><img style="vertical-align: baseline !important;" src="{% static 'assets/images/madina.png' %}" alt="madina logo" width="50px"></span>
+        <span><strong>Zimmedar Login</strong><small>Sign in for add Ijtima Members</small></span>
+      </a>
+      <div class="auth-visual"><img src="{% static 'assets/images/di-logo.png' %}" alt="Dawate Islami"></div>
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form class="needs-validation" method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="mb-1">
+          <label class="form-label" for="loginEmail">Email address</label>
+          <input class="form-control" id="loginEmail" name="email" type="email" required>
+          <div class="invalid-feedback">Enter a valid email.</div>
+        </div>
+        <!-- Inside form in login.html -->
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <label class="form-label" for="loginPassword">Password</label>
+          </div>
+          
+          <div class="input-group">
+            <input class="form-control" id="loginPassword" name="password" type="password" minlength="6" required>
+            <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('loginPassword', 'toggleIconLogin')">
+              <i class="bi bi-eye" id="toggleIconLogin" aria-hidden="true"></i>
+            </button>
+            <div class="invalid-feedback">Password must be at least 6 characters.</div>
+          </div>
+        </div>
+        <button class="btn btn-primary w-100" type="submit"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Sign In</button>
+      </form>
+      
+      <div class="auth-footer">New here? <a href="{% url 'register' %}">Create an account</a></div>
+    </section>
+  </main>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script>
+  function togglePasswordVisibility(passwordId, iconId) {
+    const passwordInput = document.getElementById(passwordId);
+    const toggleIcon = document.getElementById(iconId);
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.classList.remove('bi-eye');
+      toggleIcon.classList.add('bi-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.classList.remove('bi-eye-slash');
+      toggleIcon.classList.add('bi-eye');
+    }
+  }
+</script>
+</body>
+</html>

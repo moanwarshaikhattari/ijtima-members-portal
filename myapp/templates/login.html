@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "head.html" %}
+  <title>{{ title }}</title>
+</head>
+
+<body class="auth-body">
+  <button class="icon-button theme-toggle auth-theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
+    <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
+  </button>
+  <main class="auth-page">
+    <section class="auth-card">
+      <a class="auth-brand">
+        <span><img style="vertical-align: baseline !important;" src="{% static 'assets/images/madina.png' %}" alt="madina logo" width="50px"></span>
+        <span><strong>Zimmedar Login</strong><small>Sign in for add Ijtima Members</small></span>
+      </a>
+      <div class="auth-visual"><img src="{% static 'assets/images/di-logo.png' %}" alt="Dawate Islami"></div>
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form id="contactForm" method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="mb-1">
+          <label class="form-label" for="loginEmail">Email Address*</label>
+          <input class="form-control" id="loginEmail" name="email" type="email" placeholder="Enter Valid Email ID">
+          <div class="text-danger error" id="errorEmail"></div>
+        </div>
+        <!-- Inside form in login.html -->
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <label class="form-label" for="loginPassword">Password*</label>
+          </div>
+          
+          <div class="input-group">
+            <input class="form-control" id="loginPassword" name="password" type="password" minlength="6" placeholder="Enter Password at least 6 Characters">
+            <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('loginPassword', 'toggleIconLogin')">
+              <i class="bi bi-eye" id="toggleIconLogin" aria-hidden="true"></i>
+            </button>
+            <div class="invalid-feedback">Password must be at least 6 characters.</div>
+          </div>
+          <div class="text-danger error" id="errorPassword"></div>
+        </div>
+        <button class="btn btn-primary w-100" type="submit" id="submitBtn"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Sign In</button>
+      </form>
+      
+      <div class="auth-footer">New here? <a href="{% url 'register' %}">Create an account</a></div>
+    </section>
+  </main>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script>
+  function togglePasswordVisibility(passwordId, iconId) {
+    const passwordInput = document.getElementById(passwordId);
+    const toggleIcon = document.getElementById(iconId);
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.classList.remove('bi-eye');
+      toggleIcon.classList.add('bi-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.classList.remove('bi-eye-slash');
+      toggleIcon.classList.add('bi-eye');
+    }
+  }
+
+  document.getElementById("contactForm").onsubmit = function (e) {
+      const submitBtn = document.getElementById('submitBtn');
+      // Clear previous errors
+      document.getElementById("errorEmail").innerText = "";
+      document.getElementById("errorPassword").innerText = "";
+
+      let valid = true;
+
+      const email = document.querySelector("[name='email']").value.trim();
+      const password = document.querySelector("[name='password']").value.trim();
+
+
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        document.getElementById("errorEmail").innerText = "Enter a valid email address.";
+        valid = false;
+      }
+
+      if (password === "") {
+        document.getElementById("errorPassword").innerText = "Password must be at least 6 characters.";
+        valid = false;
+      }
+      // If form is valid, show processing
+      if (valid) {
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        submitBtn.disabled = true;
+      } else {
+        e.preventDefault(); // stop form from submitting
+      }
+    };
+</script>
+</body>
+</html>
