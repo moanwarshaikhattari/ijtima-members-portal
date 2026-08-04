@@ -133,7 +133,7 @@ def Usersignup(request):
                 recipient_list=[email],
                 fail_silently=False,
             )
-            messages.success(request, f"OTP code sent to {email}. Please enter it below.")
+            # messages.success(request, f"OTP code sent to {email}. Please enter it below.")
             
             return render(request, 'register.html', {
                 'title': 'New Zimmedar Register',
@@ -290,6 +290,7 @@ def export_members_excel(request):
         "Name",
         "Mobile Number",
         "Location",
+        "Blood Donate",
         "Joined Date",
         "Zimmedar Name",
     ]

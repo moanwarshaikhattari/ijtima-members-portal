@@ -1191,8 +1191,10 @@ html[data-theme="dark"] .profile-avatar {
   place-items: center;
   flex: 0 0 auto;
   border-radius: 8px;
-  background: #eaf2ff;
-  color: var(--admin-primary-dark);
+  /* background: #eaf2ff;
+  color: var(--admin-primary-dark); */
+  background: #a3cfbb !important;
+  color:#198754 !important;
 }
 
 .page-icon {
@@ -1418,9 +1420,9 @@ body,
 }
 
 .page-item.active .page-link {
-  border-color: var(--admin-primary);
-  background: var(--admin-primary);
-  color: #ffffff;
+  border-color: #198754 !important;
+  background: #a3cfbb !important;
+  color: #000;
 }
 
 .page-item.disabled .page-link {
@@ -1622,13 +1624,13 @@ html[data-theme="dark"] {
 .sidebar-nav .nav-link:hover,
 .sidebar-nav .nav-link:focus,
 .sidebar-nav .nav-link.active {
-  background: var(--admin-sidebar-soft);
+  background: #a3cfbb !important;
   color: var(--admin-sidebar-text-strong);
 }
 
 .nav-icon {
-  background: var(--admin-sidebar-icon-bg);
-  color: var(--admin-sidebar-icon);
+  background: #a3cfbb !important;
+  color: #198754 !important;
 }
 
 .sidebar-footer {

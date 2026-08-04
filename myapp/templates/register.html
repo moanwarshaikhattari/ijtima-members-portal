@@ -9,6 +9,33 @@
       font-size:12px;
       margin-top:5px;
     }
+    /* .alert-dismissible .btn-close{
+      padding: 10px !important;
+    }
+    .alert{
+      padding: 5px 12px !important;
+    } */
+    /* Circular OTP Input Fields */
+    .otp-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background-color: rgba(255, 255, 255, 0.08); /* Dark glass effect */
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+      border-color: #28a745;
+    }
+
+    /* Highlight input on focus */
+    .otp-circle:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+      background-color: rgba(255, 255, 255, 0.15);
+    }
   </style>
 </head>
 
@@ -35,17 +62,38 @@
 
       {% if otp_sent %}
         <!-- STEP 2: OTP VERIFICATION INPUT -->
-        <form class="needs-validation" method="POST" action="{% url 'register' %}">
+        <form class="needs-validation" method="POST" action="{% url 'register' %}" id="otpForm">
           {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label" for="registerOtp">Enter 6-Digit OTP sent to <strong>{{ email }}</strong></label>
-            <input class="form-control text-center fs-4" id="registerOtp" name="otp" type="text" maxlength="6" required autofocus>
-            <div class="invalid-feedback">OTP is required.</div>
+          
+          <div class="text-center mb-4">
+            <h4 class="fw-bold">Please enter the code</h4>
+            <p class="text-muted small">
+              We sent a 6-digit code to your email<br>
+              <strong class="text-success">{{ email }}</strong>
+            </p>
           </div>
-          <button class="btn btn-success w-100 mb-2" type="submit" name="verify_otp">
-            <i class="bi bi-shield-check" aria-hidden="true"></i> Verify & Finish Registration
+
+          <!-- Hidden input to gather the final code for Django -->
+          <input type="hidden" name="otp" id="finalOtpInput" required>
+
+          <!-- 6 Rounded Input Circles -->
+          <div class="otp-container d-flex justify-content-center gap-2 mb-4">
+            <input type="text" class="otp-circle" maxlength="1" pattern="[0-9]" inputmode="numeric" autofocus>
+            <input type="text" class="otp-circle" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" class="otp-circle" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" class="otp-circle" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" class="otp-circle" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" class="otp-circle" maxlength="1" pattern="[0-9]" inputmode="numeric">
+          </div>
+
+          <button class="btn btn-success w-100 rounded-pill py-2 mb-3 fw-bold" type="submit" name="verify_otp">
+            Submit
           </button>
-          <a href="{% url 'register' %}" class="btn btn-outline-secondary w-100 btn-sm">Resend or Edit Info</a>
+
+          <div class="text-center">
+            <span class="text-muted small">Didn't get OTP?</span> 
+            <a href="{% url 'register' %}" class="text-success small fw-bold text-decoration-none ms-1">Resend OTP</a>
+          </div>
         </form>
       {% else %}
         <!-- STEP 1: INITIAL REGISTRATION INPUTS -->
@@ -91,95 +139,146 @@
             </div>
             <div class="text-danger error" id="errorPassword"></div>
           </div>
-          <button class="btn btn-primary w-100" type="submit" name="send_otp" id="submitBtn">
+          <button class="btn btn-success w-100" type="submit" name="send_otp" id="submitBtn">
             <i class="bi bi-envelope-paper" aria-hidden="true"></i> Send OTP & Continue
           </button>
         </form>
       {% endif %}
       
-      <div class="auth-footer mt-2">Already have an account? <a href="{% url 'login' %}">Sign in</a></div>
+      <div class="auth-footer mt-2">Already have an account? <a href="{% url 'login' %}"><span class="text-danger">Sign in</span></a></div>
     </section>
   </main>
 
   <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'assets/js/main.js' %}"></script>
   <script>
-  function togglePasswordVisibility(passwordId, iconId) {
-    const passwordInput = document.getElementById(passwordId);
-    const toggleIcon = document.getElementById(iconId);
+    function togglePasswordVisibility(passwordId, iconId) {
+      const passwordInput = document.getElementById(passwordId);
+      const toggleIcon = document.getElementById(iconId);
 
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      toggleIcon.classList.remove('bi-eye');
-      toggleIcon.classList.add('bi-eye-slash');
-    } else {
-      passwordInput.type = 'password';
-      toggleIcon.classList.remove('bi-eye-slash');
-      toggleIcon.classList.add('bi-eye');
-    }
-  }
-
-  const contactForm = document.getElementById("contactForm");
-  
-  if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-      const submitBtn = document.getElementById('submitBtn');
-      
-      // Clear previous error messages
-      document.getElementById("errorName").innerText = "";
-      document.getElementById("errorMobile").innerText = "";
-      document.getElementById("errorEmail").innerText = "";
-      document.getElementById("errorDept").innerText = "";
-      document.getElementById("errorLocation").innerText = "";
-      document.getElementById("errorPassword").innerText = "";
-
-      let valid = true;
-
-      const name = document.querySelector("[name='name']").value.trim();
-      const mobile = document.querySelector("[name='mobile']").value.trim();
-      const email = document.querySelector("[name='email']").value.trim();
-      const department = document.querySelector("[name='department']").value.trim();
-      const location = document.querySelector("[name='location']").value.trim();
-      const password = document.querySelector("[name='password']").value.trim();
-
-      if (name === "") {
-        document.getElementById("errorName").innerText = "Name is required.";
-        valid = false;
-      }
-
-      if (!/^\d{10}$/.test(mobile)) {
-        document.getElementById("errorMobile").innerText = "Mobile number must be 10 digits.";
-        valid = false;
-      }
-
-      if (!/^\S+@\S+\.\S+$/.test(email)) {
-        document.getElementById("errorEmail").innerText = "Enter a valid email address.";
-        valid = false;
-      }
-
-      if (department === "") {
-        document.getElementById("errorDept").innerText = "Department is required.";
-        valid = false;
-      }
-
-      if (location === "") {
-        document.getElementById("errorLocation").innerText = "Location is required.";
-        valid = false;
-      }
-
-      if (password.length < 6) {
-        document.getElementById("errorPassword").innerText = "Password must be at least 6 characters.";
-        valid = false;
-      }
-
-      if (!valid) {
-        e.preventDefault(); // Validation fail hone par submission rokein
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
       } else {
-        // Text change karein bina button ko disable kiye taaki POST name='send_otp' Django ko mile
-        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+      }
+    }
+
+    const contactForm = document.getElementById("contactForm");
+    
+    if (contactForm) {
+      contactForm.addEventListener("submit", function (e) {
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Clear previous error messages
+        document.getElementById("errorName").innerText = "";
+        document.getElementById("errorMobile").innerText = "";
+        document.getElementById("errorEmail").innerText = "";
+        document.getElementById("errorDept").innerText = "";
+        document.getElementById("errorLocation").innerText = "";
+        document.getElementById("errorPassword").innerText = "";
+
+        let valid = true;
+
+        const name = document.querySelector("[name='name']").value.trim();
+        const mobile = document.querySelector("[name='mobile']").value.trim();
+        const email = document.querySelector("[name='email']").value.trim();
+        const department = document.querySelector("[name='department']").value.trim();
+        const location = document.querySelector("[name='location']").value.trim();
+        const password = document.querySelector("[name='password']").value.trim();
+
+        if (name === "") {
+          document.getElementById("errorName").innerText = "Name is required.";
+          valid = false;
+        }
+
+        if (!/^\d{10}$/.test(mobile)) {
+          document.getElementById("errorMobile").innerText = "Mobile number must be 10 digits.";
+          valid = false;
+        }
+
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          document.getElementById("errorEmail").innerText = "Enter a valid email address.";
+          valid = false;
+        }
+
+        if (department === "") {
+          document.getElementById("errorDept").innerText = "Department is required.";
+          valid = false;
+        }
+
+        if (location === "") {
+          document.getElementById("errorLocation").innerText = "Location is required.";
+          valid = false;
+        }
+
+        if (password.length < 6) {
+          document.getElementById("errorPassword").innerText = "Password must be at least 6 characters.";
+          valid = false;
+        }
+
+        if (!valid) {
+          e.preventDefault(); // Validation fail hone par submission rokein
+        } else {
+          // Text change karein bina button ko disable kiye taaki POST name='send_otp' Django ko mile
+          submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        }
+      });
+    }
+
+    // otp register
+    document.addEventListener("DOMContentLoaded", function () {
+      const otpInputs = document.querySelectorAll(".otp-circle");
+      const finalOtpInput = document.getElementById("finalOtpInput");
+      const otpForm = document.getElementById("otpForm");
+
+      if (otpInputs.length > 0) {
+        otpInputs.forEach((input, index) => {
+          // Auto-advance on input
+          input.addEventListener("input", (e) => {
+            if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+              otpInputs[index + 1].focus();
+            }
+            updateFinalOtp();
+          });
+
+          // Move backward on backspace
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace" && !e.target.value && index > 0) {
+              otpInputs[index - 1].focus();
+            }
+          });
+
+          // Handle pasting whole code (e.g. 123456)
+          input.addEventListener("paste", (e) => {
+            e.preventDefault();
+            const pasteData = e.clipboardData.getData("text").trim();
+            if (/^\d+$/.test(pasteData)) {
+              const digits = pasteData.split("");
+              otpInputs.forEach((inp, i) => {
+                if (digits[i]) inp.value = digits[i];
+              });
+              updateFinalOtp();
+              otpInputs[Math.min(digits.length, otpInputs.length) - 1].focus();
+            }
+          });
+        });
+
+        function updateFinalOtp() {
+          let otp = "";
+          otpInputs.forEach((input) => (otp += input.value));
+          finalOtpInput.value = otp;
+        }
+
+        // Ensure hidden field is updated before submit
+        otpForm.addEventListener("submit", function () {
+          updateFinalOtp();
+        });
       }
     });
-  }
-</script>
+  </script>
 </body>
 </html>
