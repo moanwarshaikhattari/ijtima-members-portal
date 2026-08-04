@@ -89,16 +89,28 @@
 
                   <div class="col-md-6">
                     <label class="form-label" for="blood">Blood Donate*</label>
-                    <select class="form-select form-control mb-0" id="blood" name="blood">
+                    <!-- <select class="form-select form-control mb-0" id="blood" name="blood">
                       <option value="">--Select Blood Donate--</option>
                       {% for key, value in Member.BLOOD_CHOICES %}
                           <option value="{{ key }}" {% if member.blood_donate == key %}selected{% endif %}>
                               {{ value }}
                           </option>
                       {% endfor %}
-                    </select>
+                    </select> -->
+                    <div class="mt-2" role="group">
+                      {% for key, value in Member.BLOOD_CHOICES %}
+                        <input type="radio" class="btn-check" name="blood" id="blood{{ forloop.counter }}" value="{{ key }}" 
+                        autocomplete="off" {% if member.blood_donate == key %}checked{% endif %} >
+
+                        <label class="btn {% if key == 'YES' %}btn-outline-success{% else %}btn-outline-danger{% endif %}"
+                              for="blood{{ forloop.counter }}">
+                            {{ value }}
+                        </label>
+                      {% endfor %}
+                    </div>
                     <div class="error" id="errorBlood"></div>
                   </div>
+                  
                 </div>
 
                 <div class="d-flex flex-wrap justify-content-end gap-2 mt-3">
@@ -132,16 +144,16 @@
         });
       }
 
-      const bloodSelect = document.getElementById('blood');
-      if (bloodSelect) {
-        new Choices(bloodSelect, {
-          searchEnabled: false,
-          itemSelectText: '',
-          shouldSort: false,
-          placeholder: false,
-          placeholderValue: 'Select blood donate',
-        });
-      }
+      // const bloodSelect = document.getElementById('blood');
+      // if (bloodSelect) {
+      //   new Choices(bloodSelect, {
+      //     searchEnabled: false,
+      //     itemSelectText: '',
+      //     shouldSort: false,
+      //     placeholder: false,
+      //     placeholderValue: 'Select blood donate',
+      //   });
+      // }
 
       // 2. Form Submit Validation Logic
       const form = document.getElementById("contactForm");
@@ -158,14 +170,14 @@
           if (errName) errName.innerText = "";
           if (errMobile) errMobile.innerText = "";
           if (errLocation) errLocation.innerText = "";
-          if (errBlood) errLocation.innerText = "";
+          if (errBlood) errBlood.innerText = "";
 
           let valid = true;
 
           const name = document.querySelector("[name='name']").value.trim();
           const mobile = document.querySelector("[name='mobile']").value.trim();
           const location = document.querySelector("[name='location']").value.trim();
-          const blood = document.querySelector("[name='blood']").value.trim();
+          const blood = document.querySelector("input[name='blood']:checked");
 
           if (name === "") {
             if (errName) errName.innerText = "Name is required.";
@@ -182,8 +194,9 @@
             valid = false;
           }
 
-          if (blood === "") {
-            document.getElementById("errorBlood").innerText = "Select Blood Donate YRS or NO";
+          if (!blood) {
+            document.getElementById("errorBlood").innerText =
+                "Please select YES or NO.";
             valid = false;
           }
 
@@ -197,16 +210,18 @@
       }
 
       // 3. Cancel Button Logic
-      const cancelBtn = document.getElementById("cancelBtn");
-      if (cancelBtn) {
-        cancelBtn.addEventListener("click", function (e) {
-          // Clears active errors if needed before redirection
-          if (document.getElementById("errorName")) document.getElementById("errorName").innerText = "";
-          if (document.getElementById("errorMobile")) document.getElementById("errorMobile").innerText = "";
-          if (document.getElementById("errorLocation")) document.getElementById("errorLocation").innerText = "";
-          if (document.getElementById("errorLocation")) document.getElementById("errorBlood").innerText = "";
-        });
-      }
+      document.getElementById("cancelBtn").addEventListener("click", function () {
+        const form = document.getElementById("contactForm");
+
+        // Reset form
+        form.reset();
+
+        // Clear all error messages
+        document.getElementById("errorName").innerText = "";
+        document.getElementById("errorMobile").innerText = "";
+        document.getElementById("errorLocation").innerText = "";
+        document.getElementById("errorBlood").innerText = "";
+      });
     });
   </script>
 </body>
