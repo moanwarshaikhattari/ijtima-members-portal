@@ -939,7 +939,7 @@ html[data-theme="dark"] .profile-button .avatar-sm {
 }
 
 .auth-visual img {
-  /* width: 100%; */
+  width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
