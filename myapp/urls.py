@@ -3,7 +3,7 @@ from myapp import views
 
 urlpatterns = [
     path('', views.Userlogin, name='login'),
-    path('register/', views.Usersignup, name='register'),
+    path('register-temprary-discontinue/', views.Usersignup, name='register-temprary-discontinue'),
     path('profile/', views.Userprofile, name='profile'),
     path('logout/', views.Userlogout, name='logout'),
     path('members/', views.member_list, name='members'),
