@@ -263,6 +263,7 @@ def edit_member(request, pk):
         member.name = request.POST.get('name')
         member.mobile = request.POST.get('mobile')
         member.location = request.POST.get('location')
+        member.profession = request.POST.get('profession')
         member.blood_donate = request.POST.get('blood')
         member.save()
         return redirect('members')
