@@ -4,8 +4,7 @@
 <head>
   {% include "head.html" %}
   <title>{{ title }}</title>
-  <!-- Choices.js CSS added for proper rendering -->
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" /> -->
+
   <style>
      .error {
       font-size: 12px;
@@ -80,10 +79,10 @@
                   </div>
                   
                   <!-- Searchable Dropdown -->
-                  <div class="col-md-6 mt-1">
+                  <div class="col-md-4 mt-1">
                     <label class="form-label" for="location">Location*</label>
-                    <select class="form-select form-control mb-0" id="location" name="location">
-                      <option value="">--Select Location--</option>
+                    <select class="form-select location-dropdown mb-0" id="location" name="location">
+                      <option value="" {% if not  member.location %}selected{% endif %}></option>
                       {% for key, value in Member.LOCATION_CHOICES %}
                           <option value="{{ key }}" {% if member.location == key %}selected{% endif %}>
                               {{ value }}
@@ -93,16 +92,22 @@
                     <div class="error" id="errorLocation"></div>
                   </div>
 
-                  <div class="col-md-6 mt-1">
-                    <label class="form-label" for="blood">Blood Donate*</label>
-                    <!-- <select class="form-select form-control mb-0" id="blood" name="blood">
-                      <option value="">--Select Blood Donate--</option>
-                      {% for key, value in Member.BLOOD_CHOICES %}
-                          <option value="{{ key }}" {% if member.blood_donate == key %}selected{% endif %}>
+                  <div class="col-md-4 mt-1">
+                    <label class="form-label" for="profession">Profession*</label>
+                    <select class="form-select location-dropdown mb-0" id="profession" name="profession">
+                       <!-- Placeholder ke liye empty option zaroori hai -->
+                      <option value="" {% if not member.profession %}selected{% endif %}></option>
+                      {% for key, value in Member.PROFESSION_CHOICES %}
+                          <option value="{{ key }}" {% if member.profession == key %}selected{% endif %}>
                               {{ value }}
                           </option>
                       {% endfor %}
-                    </select> -->
+                    </select>
+                    <div class="error" id="errorProfession"></div>
+                  </div>
+
+                  <div class="col-md-4 mt-1">
+                    <label class="form-label" for="blood">Blood Donate*</label>
                     <div class="" role="group">
                       {% for key, value in Member.BLOOD_CHOICES %}
                         <input type="radio" class="btn-check" name="blood" id="blood{{ forloop.counter }}" value="{{ key }}" 
@@ -134,100 +139,98 @@
 
   <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'assets/js/main.js' %}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+   <!-- searchable drop down  -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $('.profession-dropdown').select2({
+        theme: 'bootstrap-5', // Bootstrap 5 Look & Feel
+        placeholder: 'Search or Select Profession...',
+        allowClear: true,
+        width: '100%'
+      });
+    });
+
+    $(document).ready(function() {
+      $('.location-dropdown').select2({
+        theme: 'bootstrap-5', // Bootstrap 5 Look & Feel
+        placeholder: 'Search or Select Location...',
+        allowClear: true,
+        width: '100%'
+      });
+    });
+  </script>
   
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // 1. Initialize Searchable Dropdown
-      const locationSelect = document.getElementById('location');
-      if (locationSelect) {
-        new Choices(locationSelect, {
-          searchEnabled: true,
-          itemSelectText: '',
-          shouldSort: false,
-          placeholder: false,
-          placeholderValue: 'Select Location',
-        });
-      }
-
-      // const bloodSelect = document.getElementById('blood');
-      // if (bloodSelect) {
-      //   new Choices(bloodSelect, {
-      //     searchEnabled: false,
-      //     itemSelectText: '',
-      //     shouldSort: false,
-      //     placeholder: false,
-      //     placeholderValue: 'Select blood donate',
-      //   });
-      // }
-
       // 2. Form Submit Validation Logic
-      const form = document.getElementById("contactForm");
-      if (form) {
-        form.onsubmit = function (e) {
-          const submitBtn = document.getElementById('submitBtn');
-          
-          // Reset error messages safely
-          const errName = document.getElementById("errorName");
-          const errMobile = document.getElementById("errorMobile");
-          const errLocation = document.getElementById("errorLocation");
-          const errBlood = document.getElementById("errorBlood");
+    document.getElementById("contactForm").onsubmit = function (e) {
+      const submitBtn = document.getElementById('submitBtn');
+      // Clear previous errors
+      document.getElementById("errorName").innerText = "";
+      document.getElementById("errorMobile").innerText = "";
+      document.getElementById("errorLocation").innerText = "";
+      document.getElementById("errorProfession").innerText = "";
+      document.getElementById("errorBlood").innerText = "";
 
-          if (errName) errName.innerText = "";
-          if (errMobile) errMobile.innerText = "";
-          if (errLocation) errLocation.innerText = "";
-          if (errBlood) errBlood.innerText = "";
+      let valid = true;
 
-          let valid = true;
+      const name = document.querySelector("[name='name']").value.trim();
+      const mobile = document.querySelector("[name='mobile']").value.trim();
+      const location = document.querySelector("[name='location']").value.trim();
+      const profession= document.querySelector("[name='profession']").value.trim();
+      const blood = document.querySelector("input[name='blood']:checked");
 
-          const name = document.querySelector("[name='name']").value.trim();
-          const mobile = document.querySelector("[name='mobile']").value.trim();
-          const location = document.querySelector("[name='location']").value.trim();
-          const blood = document.querySelector("input[name='blood']:checked");
-
-          if (name === "") {
-            if (errName) errName.innerText = "Name is required.";
-            valid = false;
-          }
-
-          if (!/^\d{10}$/.test(mobile)) {
-            if (errMobile) errMobile.innerText = "Mobile number must be exactly 10 digits.";
-            valid = false;
-          }
-
-          if (location === "") {
-            if (errLocation) errLocation.innerText = "Location is required.";
-            valid = false;
-          }
-
-          if (!blood) {
-            document.getElementById("errorBlood").innerText =
-                "Please select YES or NO.";
-            valid = false;
-          }
-
-          if (valid) {
-            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
-            submitBtn.disabled = true;
-          } else {
-            e.preventDefault(); // Stop form submission on error
-          }
-        };
+      if (name === "") {
+        document.getElementById("errorName").innerText = "Name is required.";
+        valid = false;
       }
 
+      if (!/^\d{10}$/.test(mobile)) {
+        document.getElementById("errorMobile").innerText = "Mobile number must be 10 digits.";
+        valid = false;
+      }
+
+      if (location === "") {
+        document.getElementById("errorLocation").innerText = "Location is required.";
+        valid = false;
+      }
+
+      if (profession === "") {
+        document.getElementById("errorProfession").innerText = "Profession is required.";
+        valid = false;
+      }
+
+      if (!blood) {
+        document.getElementById("errorBlood").innerText =
+            "Please select YES or NO.";
+        valid = false;
+      }
+
+      // If form is valid, show processing
+      if (valid) {
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        submitBtn.disabled = true;
+      } else {
+        e.preventDefault(); // stop form from submitting
+      }
+    };
       // 3. Cancel Button Logic
-      document.getElementById("cancelBtn").addEventListener("click", function () {
-        const form = document.getElementById("contactForm");
+    document.getElementById("cancelBtn").addEventListener("click", function () {
+      const form = document.getElementById("contactForm");
 
-        // Reset form
-        form.reset();
+      // Reset form
+      form.reset();
 
-        // Clear all error messages
-        document.getElementById("errorName").innerText = "";
-        document.getElementById("errorMobile").innerText = "";
-        document.getElementById("errorLocation").innerText = "";
-        document.getElementById("errorBlood").innerText = "";
-      });
+      // Clear all error messages
+      document.getElementById("errorName").innerText = "";
+      document.getElementById("errorMobile").innerText = "";
+      document.getElementById("errorLocation").innerText = "";
+      document.getElementById("errorProfession").innerText = "";
+      document.getElementById("errorBlood").innerText = "";
     });
   </script>
 </body>

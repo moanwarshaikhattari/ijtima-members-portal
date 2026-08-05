@@ -1,8 +1,10 @@
 {% load static %}
 <div class="sidebar-backdrop" data-sidebar-close></div>
 <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
+    
+    {% if request.user.is_superuser or request.user.is_staff %}
     <div class="sidebar-header">
-        <a class="brand-mark" href="{% url 'members' %}" aria-label="adminHMD dashboard">
+        <a class="brand-mark" href="{% url 'allmembers' %}" aria-label="adminHMD dashboard">
             <span class="b"><img style="vertical-align: baseline !important;" src="/static/assets/images/madina.png" alt="midana logo" width="50px"></span>
             <span class="brand-copy">
             <span class="brand-title">Ijtima</span>
@@ -10,7 +12,6 @@
             </span>
         </a>
     </div>
-    {% if request.user.is_superuser or request.user.is_staff %}
         <nav class="sidebar-nav">
             <a class="nav-link {% if request.path == '/allmemberslist/' %}active{% endif %}" href="{% url 'allmembers' %}"
             {% if request.path == '/allmemberslist/' %}aria-current="page"{% endif %}>
@@ -29,6 +30,15 @@
             </a>
         </nav>
     {% else %}
+    <div class="sidebar-header">
+        <a class="brand-mark" href="{% url 'members' %}" aria-label="adminHMD dashboard">
+            <span class="b"><img style="vertical-align: baseline !important;" src="/static/assets/images/madina.png" alt="midana logo" width="50px"></span>
+            <span class="brand-copy">
+            <span class="brand-title">Ijtima</span>
+            <span class="brand-subtitle">Members Portal</span>
+            </span>
+        </a>
+    </div>
         <nav class="sidebar-nav">
             <a class="nav-link {% if request.path == '/members/' %}active{% endif %}" href="{% url 'members' %}"
             {% if request.path == '/members/' %}aria-current="page"{% endif %}>

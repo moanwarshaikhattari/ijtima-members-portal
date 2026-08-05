@@ -195,12 +195,12 @@ def member_list(request):
     #     members = Member.objects.filter(created_by=request.user).order_by('-joined_at')
     
     # Session se WhatsApp URL nikalein
-    whatsapp_url = request.session.pop('open_whatsapp_url', None)
+    # whatsapp_url = request.session.pop('open_whatsapp_url', None)
 
     return render(request, 'members.html', {
         'title': 'Members List',
         'members': members,
-        'whatsapp_url': whatsapp_url
+        # 'whatsapp_url': whatsapp_url
     })
 
 @login_required(login_url='login')
@@ -209,6 +209,7 @@ def add_member(request):
         name = request.POST.get('name')
         mobile = request.POST.get('mobile')
         location = request.POST.get('location')
+        profession = request.POST.get('profession')
         blood = request.POST.get('blood')
         
 
@@ -221,6 +222,7 @@ def add_member(request):
                 'entered_name': name,
                 'entered_mobile': mobile,
                 'entered_location': location,
+                'entered_profession':profession,
                 'entered_blood':blood,
                 "Member": Member,
             })
@@ -231,21 +233,23 @@ def add_member(request):
             name=name,
             mobile=mobile,
             location=location,
+            profession=profession,
             blood_donate=blood,
             zimmedar_name=zimmedar,
             created_by=request.user
         )
+        messages.success(request, f"Member '{name}' added successfully!")
        # Build WhatsApp URL
         # Message Text
-        message_body = f"Hello {name},\n\nWelcome! Your membership registration is successful.\nLocation: {location}"
+        # message_body = f"Hello {name},\n\nWelcome! Your membership registration is successful.\nLocation: {location}"
         
         # FIX 1: safe='' set karna ZAROORI hai taaki \n breaks %0A ban jaye
-        encoded_message = urllib.parse.quote(message_body, safe='')
+        # encoded_message = urllib.parse.quote(message_body, safe='')
 
         # FIX 2: Correct URL with exact parameters
-        whatsapp_url = f"https://api.whatsapp.com/send?phone=91{mobile}&text={encoded_message}"
+        # whatsapp_url = f"https://api.whatsapp.com/send?phone=91{mobile}&text={encoded_message}"
 
-        request.session['open_whatsapp_url'] = whatsapp_url
+        # request.session['open_whatsapp_url'] = whatsapp_url
 
         return redirect('members')
 
@@ -290,6 +294,7 @@ def export_members_excel(request):
         "Name",
         "Mobile Number",
         "Location",
+        "Profession",
         "Blood Donate",
         "Joined Date",
         "Zimmedar Name",
@@ -316,6 +321,7 @@ def export_members_excel(request):
             member.name,
             member.mobile,
             member.location,
+             member.profession,
             member.blood_donate,
             joined_date,
             member.zimmedar_name,

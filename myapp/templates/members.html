@@ -62,6 +62,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Mobile</th>
                     <th scope="col">Location</th>
+                    <th scope="col">Profession</th>
                     <th scope="col">Blood Donate</th>
                     <th scope="col">Joined Date</th>
                     <th scope="col">Zimmedar Name</th>
@@ -76,6 +77,7 @@
                     </td>
                     <td><a href="tel:+91{{ member.mobile }}">{{ member.mobile }}</a></td>
                     <td>{{ member.location }}</td>
+                    <td>{{ member.profession }}</td>
                     <td style="text-align: center;">{{ member.blood_donate }}</td>
                     <td>{{ member.joined_at|date:"d M Y" }}</td>
                     <td>{{ member.zimmedar_name|title }}</td>
@@ -199,7 +201,7 @@
 
     });
   </script>
-  {% if whatsapp_url %}
+  <!-- {% if whatsapp_url %}
   <script>
     document.addEventListener("DOMContentLoaded", function () {
         // 200ms Delay ensures browser fully loads DOM before triggering external redirect
@@ -209,6 +211,6 @@
         }, 200);
     });
   </script>
-  {% endif %}
+  {% endif %} -->
 </body>
 </html>
