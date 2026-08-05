@@ -52,8 +52,107 @@ def Userlogin(request):
     return render(request, 'login.html', data)
 
 
+# def Usersignup(request):
+#     if request.user.is_authenticated:
+#         return redirect('members')
+
+#     # STEP 2: VERIFY OTP
+#     if request.method == 'POST' and 'verify_otp' in request.POST:
+#         entered_otp = request.POST.get('otp', '').strip()
+#         signup_data = request.session.get('signup_data')
+
+#         if not signup_data:
+#             messages.error(request, "Session expired. Please register again.")
+#             return redirect('register')
+
+#         if entered_otp == str(signup_data['otp']):
+#             # Create user in Django auth_user
+#             user = User.objects.create_user(
+#                 username=signup_data['email'],
+#                 email=signup_data['email'],
+#                 password=signup_data['password'],
+#                 first_name=signup_data['full_name']
+#             )
+            
+#             # Save extra fields in User Profile
+#             user.profile.department = signup_data['department']
+#             user.profile.location = signup_data['location']
+#             user.profile.mobile = signup_data['mobile']
+#             user.profile.save()
+
+#             # Clean session data after successful registration
+#             del request.session['signup_data']
+            
+#             messages.success(request, "Account created successfully! Please login.")
+#             return redirect('login')
+#         else:
+#             messages.error(request, "Invalid OTP code. Please try again.")
+#             return render(request, 'register.html', {
+#                 'title': 'New Zimmedar Register',
+#                 'otp_sent': True,
+#                 'email': signup_data['email']
+#             })
+
+#     # STEP 1: SEND OTP
+#     elif request.method == 'POST' and 'send_otp' in request.POST:
+#         full_name = request.POST.get('name', '').strip()
+#         email = request.POST.get('email', '').strip()
+#         mobile = request.POST.get('mobile', '').strip()
+#         department = request.POST.get('department', '').strip()
+#         location = request.POST.get('location', '').strip()
+#         password = request.POST.get('password', '').strip()
+
+#         # Check if user already exists
+#         if User.objects.filter(email=email).exists():
+#             messages.error(request, "Email is already registered.")
+#             return redirect('register')
+
+#         # Generate 6-digit random OTP
+#         otp = str(random.randint(100000, 999999))
+
+#         # Store form data & OTP in session
+#         request.session['signup_data'] = {
+#             'full_name': full_name,
+#             'email': email,
+#             'mobile': mobile,
+#             'department': department,
+#             'location': location,
+#             'password': password,
+#             'otp': otp
+#         }
+
+#         subject = 'Your Verification OTP Code'
+#         message = f'Hello {full_name},\n\nYour OTP code for registration is: {otp}'
+        
+#         try:
+#             # Send email to the entered recipient
+#             send_mail(
+#                 subject=subject,
+#                 message=message,
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 recipient_list=[email],
+#                 fail_silently=False,
+#             )
+#             # messages.success(request, f"OTP code sent to {email}. Please enter it below.")
+            
+#             return render(request, 'register.html', {
+#                 'title': 'New Zimmedar Register',
+#                 'otp_sent': True,
+#                 'email': email
+#             })
+
+#         except Exception as e:
+#             messages.error(request, "Failed to send OTP. Please check your email configuration.")
+#             return redirect('register')
+
+#     return render(request, 'register.html', {
+#         'title': 'New Zimmedar Register', 
+#         'otp_sent': False
+#     })
+@login_required(login_url='login')
 def Usersignup(request):
-    if request.user.is_authenticated:
+    # Logged-in non-staff user ko redirect karein, Admin/Staff ko access hone dein
+    if request.user.is_authenticated and not (request.user.is_staff or request.user.is_superuser):
         return redirect('members')
 
     # STEP 2: VERIFY OTP
@@ -62,32 +161,39 @@ def Usersignup(request):
         signup_data = request.session.get('signup_data')
 
         if not signup_data:
-            messages.error(request, "Session expired. Please register again.")
-            return redirect('register')
+            messages.error(request, "Session expired. Please try registering again.")
+            return redirect('create_user')
 
-        if entered_otp == str(signup_data['otp']):
+        # Clean string conversion to avoid type comparison issues
+        stored_otp = str(signup_data.get('otp', '')).strip()
+
+        if entered_otp and entered_otp == stored_otp:
+            # Username fallback
+            username_val = signup_data.get('mobile') or signup_data.get('email')
+
             # Create user in Django auth_user
             user = User.objects.create_user(
-                username=signup_data['email'],
+                username=username_val,
                 email=signup_data['email'],
                 password=signup_data['password'],
                 first_name=signup_data['full_name']
             )
             
             # Save extra fields in User Profile
-            user.profile.department = signup_data['department']
-            user.profile.location = signup_data['location']
-            user.profile.mobile = signup_data['mobile']
-            user.profile.save()
+            if hasattr(user, 'profile'):
+                user.profile.department = signup_data.get('department', '')
+                user.profile.location = signup_data.get('location', '')
+                user.profile.mobile = signup_data.get('mobile', '')
+                user.profile.save()
 
             # Clean session data after successful registration
             del request.session['signup_data']
             
-            messages.success(request, "Account created successfully! Please login.")
-            return redirect('login')
+            messages.success(request, f"Zimmedar '{user.first_name}' created successfully!", extra_tags='allzimmedar_alert')
+            return redirect('allzimmedar')
         else:
-            messages.error(request, "Invalid OTP code. Please try again.")
-            return render(request, 'register.html', {
+            messages.error(request, f"Invalid OTP code. Please try again.")
+            return render(request, 'createuser.html', {
                 'title': 'New Zimmedar Register',
                 'otp_sent': True,
                 'email': signup_data['email']
@@ -102,10 +208,14 @@ def Usersignup(request):
         location = request.POST.get('location', '').strip()
         password = request.POST.get('password', '').strip()
 
-        # Check if user already exists
+        # Check if email or mobile already exists
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email is already registered.")
-            return redirect('register')
+            return redirect('create_user')
+            
+        if User.objects.filter(username=mobile).exists():
+            messages.error(request, "Mobile number is already registered.")
+            return redirect('create_user')
 
         # Generate 6-digit random OTP
         otp = str(random.randint(100000, 999999))
@@ -125,27 +235,30 @@ def Usersignup(request):
         message = f'Hello {full_name},\n\nYour OTP code for registration is: {otp}'
         
         try:
-            # Send email to the entered recipient
+            # Fallback handling for Sender Email
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'EMAIL_HOST_USER', None)
+
             send_mail(
                 subject=subject,
                 message=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
+                from_email=from_email,
                 recipient_list=[email],
                 fail_silently=False,
             )
-            # messages.success(request, f"OTP code sent to {email}. Please enter it below.")
             
-            return render(request, 'register.html', {
-                'title': 'New Zimmedar Register',
+            return render(request, 'createuser.html', {
+                'title': 'New User Create',
                 'otp_sent': True,
                 'email': email
             })
 
         except Exception as e:
-            messages.error(request, "Failed to send OTP. Please check your email configuration.")
-            return redirect('register')
+            # Exact error dekhein
+            print("EMAIL TRANSMISSION ERROR:", str(e))
+            messages.error(request, f"Failed to send OTP. Error: {str(e)}")
+            return redirect('create_user')
 
-    return render(request, 'register.html', {
+    return render(request, 'createuser.html', {
         'title': 'New Zimmedar Register', 
         'otp_sent': False
     })
@@ -457,3 +570,38 @@ def all_zimmedar(request):
         'users_list': users,  # Registered Users ki list
     }
     return render(request, 'allzimmedar.html', data)
+
+
+def delete_user(request, user_id):
+    if request.method == 'POST':
+        user_to_delete = get_object_or_404(User, id=user_id)
+        
+        # Self-deletion safety check
+        if request.user == user_to_delete:
+            messages.error(request, "You cannot delete your own account!", extra_tags='allzimmedar_alert')
+            return redirect('allzimmedar')
+
+        user_name = user_to_delete.get_full_name() or user_to_delete.username
+        user_to_delete.delete()
+        
+        messages.success(request, f"User '{user_name}' has been deleted successfully.", extra_tags='allzimmedar_alert')
+        return redirect('allzimmedar')
+        
+    return redirect('allzimmedar')
+
+def delete_member(request, member_id):
+    if request.method == 'POST':
+        member_obj = get_object_or_404(Member, id=member_id)
+        member_name = member_obj.name
+        
+        member_obj.delete()
+        
+        # English success message
+        messages.success(
+            request, 
+            f"Member '{member_name}' has been deleted successfully.", 
+            extra_tags='member_alert'
+        )
+        return redirect('allmembers')  # Jis page par table hai, us URL ka name yahan likhein
+        
+    return redirect('allmembers')

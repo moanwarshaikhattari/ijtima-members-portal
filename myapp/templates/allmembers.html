@@ -43,7 +43,7 @@
             </div>
           </div>
 
-          <section class="panel mt-3">
+          <section class="panel mt-3 mb-lg-0 mb-5">
             <div class="panel-header mb-2">
               <!-- <div>
                 <h2 class="h5 mb-1 section-title"><i class="bi bi-table" aria-hidden="true"></i><span>All Members List</span></h2>
@@ -56,6 +56,16 @@
               </div>
             </div>
             <div class="table-responsive">
+              {% if messages %}
+                {% for message in messages %}
+                  {% if 'member_alert' in message.extra_tags %}
+                    <div class="alert {% if message.tags and 'error' in message.tags %}alert-danger{% elif message.tags and 'success' in message.tags %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
               <table class="table align-middle mb-0" id="usersTable" data-searchable-table>
                 <thead>
                   <tr>
@@ -66,7 +76,7 @@
                     <th scope="col" style="text-align: center;">Blood Donate</th>
                     <th scope="col">Joined Date</th>
                     <th scope="col">Zimmedar Name</th>
-                    <!-- <th scope="col" class="text-end">Action</th> -->
+                    <th scope="col" class="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -81,16 +91,47 @@
                     <td style="text-align: center;">{{ member.blood_donate }}</td>
                     <td>{{ member.joined_at|date:"d M Y" }}</td>
                     <td>{{ member.zimmedar_name|title }}</td>
-                    <!-- <td class="text-end">
-                      
-                      <a class="btn btn-light btn-sm btn-text" href="{% url 'memberdetails' member.id %}">
-                        <i class="bi bi-pencil-square"></i> View / Edit
-                      </a>
-                    </td> -->
+                    
+                    <!-- Action Column (View/Edit + Delete) -->
+                    <td class="text-center">
+                      <div class="d-flex align-items-center justify-content-center gap-2">
+                        <!-- Delete Button (Triggers Modal) -->
+                        <button type="button" class="btn btn-outline-danger btn-sm" style="padding:0 5px;" data-bs-toggle="modal" data-bs-target="#deleteMemberModal{{ member.id }}">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+
+                      <!-- Delete Confirmation Modal -->
+                      <div class="modal fade" id="deleteMemberModal{{ member.id }}" tabindex="-1" aria-labelledby="deleteMemberModalLabel{{ member.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content text-start">
+                            <div class="modal-header">
+                              <h5 class="modal-title text-danger" id="deleteMemberModalLabel{{ member.id }}">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Delete
+                              </h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              Are you sure you want to delete member <strong>{{ member.name|title }}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+
+                              <!-- Delete POST Form -->
+                              <form action="{% url 'delete_member' member.id %}" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Yes, Delete</button>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                   {% empty %}
                   <tr>
-                    <td colspan="6" class="text-center py-4 text-muted">No members found in database.</td>
+                    <!-- Updated colspan to 8 for the new column -->
+                    <td colspan="8" class="text-center py-4 text-muted">No members found in database.</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -122,6 +163,7 @@
           </section>
         </div>
       </main>
+      {% include 'footer-navbar.html' %}
 
       <!-- {% include "footer.html" %} -->
     </div>
@@ -201,7 +243,7 @@
 
     });
   </script>
-  {% if whatsapp_url %}
+  <!-- {% if whatsapp_url %}
   <script>
     document.addEventListener("DOMContentLoaded", function () {
         // 200ms Delay ensures browser fully loads DOM before triggering external redirect
@@ -211,6 +253,6 @@
         }, 200);
     });
   </script>
-  {% endif %}
+  {% endif %} -->
 </body>
 </html>

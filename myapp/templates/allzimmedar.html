@@ -32,7 +32,7 @@
             </div>
           </div>
 
-          <section class="panel mt-3">
+          <section class="panel mt-3 mb-lg-0 mb-5">
             <div class="panel-header mb-2">
               <div class="d-flex flex-wrap gap-2">
                 <input class="form-control form-control-sm table-search" type="search" placeholder="Search Member" data-table-search="usersTable" aria-label="Search users">
@@ -40,6 +40,16 @@
             </div>
 
             <div class="table-responsive">
+              {% if messages %}
+                {% for message in messages %}
+                  {% if 'allzimmedar_alert' in message.extra_tags %}
+                    <div class="alert {% if message.tags and 'error' in message.tags %}alert-danger{% elif message.tags and 'success' in message.tags %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
               <table class="table align-middle mb-0" id="usersTable" data-searchable-table>
                 <thead>
                   <tr>
@@ -49,6 +59,7 @@
                     <th scope="col">Location</th>
                     <th scope="col">Department</th>
                     <th scope="col">Date Joined</th>
+                    <th scope="col" class="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -62,7 +73,6 @@
                           {{ user_obj.username }}
                         {% endif %}
                       </p>
-                      <!-- <small class="text-muted">@{{ user_obj.username }}</small> -->
                     </td>
                     <td>
                       {% if user_obj.profile.mobile %}
@@ -75,10 +85,47 @@
                     <td>{{ user_obj.profile.location|default:"-" }}</td>
                     <td>{{ user_obj.profile.department|default:"-" }}</td>
                     <td>{{ user_obj.date_joined|date:"d M Y" }}</td>
+                    
+                    <!-- Delete Action Button -->
+                    <td class="text-center">
+                      <div class="d-flex align-items-center justify-content-center gap-2">
+                        <!-- Delete Button (Triggers Modal) -->
+                        <button type="button" class="btn btn-outline-danger btn-sm" style="padding:0 5px;" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user_obj.id }}">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                      
+
+                      <!-- Delete Confirmation Modal -->
+                      <div class="modal fade" id="deleteModal{{ user_obj.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ user_obj.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content text-start">
+                            <div class="modal-header">
+                              <h5 class="modal-title text-danger" id="deleteModalLabel{{ user_obj.id }}">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Delete
+                              </h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              Are you sure you want to delete the user <strong>{% if user_obj.get_full_name %}{{ user_obj.get_full_name }}{% else %}{{ user_obj.username }}{% endif %}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                              
+                              <!-- Actual Delete POST Form -->
+                              <form action="{% url 'delete_user' user_obj.id %}" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Yes, Delete</button>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                   {% empty %}
                   <tr>
-                    <td colspan="6" class="text-center py-4 text-muted">No registered users found in database.</td>
+                    <td colspan="7" class="text-center py-4 text-muted">No registered users found in database.</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -104,6 +151,7 @@
           </section>
         </div>
       </main>
+      {% include 'footer-navbar.html' %}
     </div>
   </div>
 
@@ -174,16 +222,5 @@
         showPage(currentPage);
     });
   </script>
-
-  {% if whatsapp_url %}
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        setTimeout(function() {
-            var url = "{{ whatsapp_url|safe }}";
-            window.open(url, '_blank');
-        }, 200);
-    });
-  </script>
-  {% endif %}
 </body>
 </html>

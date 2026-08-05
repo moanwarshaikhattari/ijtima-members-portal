@@ -3,15 +3,15 @@
 <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
     
     {% if request.user.is_superuser or request.user.is_staff %}
-    <div class="sidebar-header">
-        <a class="brand-mark" href="{% url 'allmembers' %}" aria-label="adminHMD dashboard">
-            <span class="b"><img style="vertical-align: baseline !important;" src="/static/assets/images/madina.png" alt="midana logo" width="50px"></span>
-            <span class="brand-copy">
-            <span class="brand-title">Ijtima</span>
-            <span class="brand-subtitle">Members Portal</span>
-            </span>
-        </a>
-    </div>
+        <div class="sidebar-header">
+            <a class="brand-mark" href="{% url 'allmembers' %}" aria-label="adminHMD dashboard">
+                <span class="b"><img style="vertical-align: baseline !important;" src="/static/assets/images/madina.png" alt="midana logo" width="50px"></span>
+                <span class="brand-copy">
+                    <span class="brand-title">Ijtima</span>
+                    <span class="brand-subtitle">Members Portal</span>
+                </span>
+            </a>
+        </div>
         <nav class="sidebar-nav">
             <a class="nav-link {% if request.path == '/allmemberslist/' %}active{% endif %}" href="{% url 'allmembers' %}"
             {% if request.path == '/allmemberslist/' %}aria-current="page"{% endif %}>
@@ -28,22 +28,31 @@
                 </span>
                 <span class="nav-text">All Zimmedar</span>
             </a>
+
+            <!-- Fixed /registers/ to /register/ -->
+            <a class="nav-link {% if request.path == '/createuser/' %}active{% endif %}" href="{% url 'create_user' %}"
+            {% if request.path == '/createuser/' %}aria-current="page"{% endif %}>
+                <span class="nav-icon">
+                    <i class="bi bi-person-plus" aria-hidden="true"></i>
+                </span>
+                <span class="nav-text">Create User</span>
+            </a>
         </nav>
     {% else %}
-    <div class="sidebar-header">
-        <a class="brand-mark" href="{% url 'members' %}" aria-label="adminHMD dashboard">
-            <span class="b"><img style="vertical-align: baseline !important;" src="/static/assets/images/madina.png" alt="midana logo" width="50px"></span>
-            <span class="brand-copy">
-            <span class="brand-title">Ijtima</span>
-            <span class="brand-subtitle">Members Portal</span>
-            </span>
-        </a>
-    </div>
+        <div class="sidebar-header">
+            <a class="brand-mark" href="{% url 'members' %}" aria-label="adminHMD dashboard">
+                <span class="b"><img style="vertical-align: baseline !important;" src="/static/assets/images/madina.png" alt="midana logo" width="50px"></span>
+                <span class="brand-copy">
+                    <span class="brand-title">Ijtima</span>
+                    <span class="brand-subtitle">Members Portal</span>
+                </span>
+            </a>
+        </div>
         <nav class="sidebar-nav">
             <a class="nav-link {% if request.path == '/members/' %}active{% endif %}" href="{% url 'members' %}"
             {% if request.path == '/members/' %}aria-current="page"{% endif %}>
                 <span class="nav-icon">
-                    <i class="bi bi-person-plus" aria-hidden="true"></i>
+                    <i class="bi bi-people" aria-hidden="true"></i>
                 </span>
                 <span class="nav-text">Members</span>
             </a>

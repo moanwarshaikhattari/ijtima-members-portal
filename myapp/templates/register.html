@@ -62,7 +62,7 @@
 
       {% if otp_sent %}
         <!-- STEP 2: OTP VERIFICATION INPUT -->
-        <form class="needs-validation" method="POST" action="{% url 'register' %}" id="otpForm">
+        <form class="needs-validation" method="POST" action="{% url 'create_user' %}" id="otpForm">
           {% csrf_token %}
           
           <div class="text-center mb-4">
@@ -97,7 +97,7 @@
         </form>
       {% else %}
         <!-- STEP 1: INITIAL REGISTRATION INPUTS -->
-        <form id="contactForm" method="POST" action="{% url 'register' %}">
+        <form id="contactForm" method="POST" action="{% url 'create_user' %}">
           {% csrf_token %}
           <div class="mb-1">
             <label class="form-label" for="registerName">Full Name*</label>

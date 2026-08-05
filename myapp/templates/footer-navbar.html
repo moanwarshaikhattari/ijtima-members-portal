@@ -37,24 +37,43 @@
 
 <div class="container-fluid sticky-navbar bg-white d-lg-none bottom-border p-0">
     <div class="d-flex justify-content-around align-items-center text-center">
+        {% if request.user.is_superuser or request.user.is_staff %}
+            <!-- allmembers -->
+            <a href="{% url 'allmembers' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'allmembers' %}active{% endif %}">
+                <i class="bi bi-people-fill"></i>
+                <span>All Members</span>
+            </a>
 
-        <!-- Home -->
-        <a href="{% url 'members' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'members' %}active{% endif %}">
-            <i class="bi bi-house-door-fill"></i>
-            <span>Home</span>
-        </a>
+            <!-- allzimmedar -->
+            <a href="{% url 'allzimmedar' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'allzimmedar' %}active{% endif %}">
+                <i class="bi bi-people-fill"></i>
+                <span>All Zimmedar</span>
+            </a>
 
-        <!-- Add Member -->
-        <a href="{% url 'addmember' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'addmember' %}active{% endif %}">
-            <i class="bi bi-person-plus-fill"></i>
-            <span>Add Member</span>
-        </a>
+            <!-- create_user -->
+            <a href="{% url 'create_user' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'create_user' %}active{% endif %}">
+                <i class="bi bi-person-fill-add"></i>
+                <span>Create User</span>
+            </a>
+        {% else %}
+            <!-- Home -->
+            <a href="{% url 'members' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'members' %}active{% endif %}">
+                <i class="bi bi-house-door-fill"></i>
+                <span>Home</span>
+            </a>
 
-        <!-- Profile -->
-        <a href="{% url 'profile' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
-            <i class="bi bi-person-circle"></i>
-            <span>Profile</span>
-        </a>
+            <!-- Add Member -->
+            <a href="{% url 'addmember' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'addmember' %}active{% endif %}">
+                <i class="bi bi-person-fill-add"></i>
+                <span>Add Member</span>
+            </a>
+
+            <!-- Profile -->
+            <a href="{% url 'profile' %}" class="footer-item text-decoration-none {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                <i class="bi bi-person-circle"></i>
+                <span>Profile</span>
+            </a>
+        {% endif %}
 
     </div>
 </div>

@@ -3,7 +3,7 @@ from myapp import views
 
 urlpatterns = [
     path('', views.Userlogin, name='login'),
-    path('register-temprary-discontinue/', views.Usersignup, name='register-temprary-discontinue'),
+    path('createuser/', views.Usersignup, name='create_user'),
     path('profile/', views.Userprofile, name='profile'),
     path('logout/', views.Userlogout, name='logout'),
     path('members/', views.member_list, name='members'),
@@ -18,6 +18,8 @@ urlpatterns = [
     path('allzimmedarlist/', views.all_zimmedar, name='allzimmedar'),
     # Excel download view for user/zimmedar
     path('export-users-excel/', views.export_users_excel, name='export_users_excel'),  
-    
+
+    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('delete-member/<int:member_id>/', views.delete_member, name='delete_member'),
       
 ]
