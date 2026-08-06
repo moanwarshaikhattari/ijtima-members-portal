@@ -144,8 +144,8 @@
   <!-- Select2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-  <script>
+    <!-- old  -->
+  <!-- <script>
     $(document).ready(function() {
       $('.profession-dropdown').select2({
         theme: 'bootstrap-5', // Bootstrap 5 Look & Feel
@@ -232,6 +232,102 @@
       document.getElementById("errorProfession").innerText = "";
       document.getElementById("errorBlood").innerText = "";
     });
+  </script> -->
+
+  <!-- new  -->
+   <script>
+    $(document).ready(function() {
+  // Initialize Location Dropdown
+      $('.location-dropdown').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Search or Select Location...',
+        allowClear: true,
+        width: '100%'
+      });
+
+      // Initialize Profession Dropdown
+      $('.profession-dropdown').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Search or Select Profession...',
+        allowClear: true,
+        width: '100%'
+      });
+
+      // 2. Fix for Mobile View Keypad Open Issue:
+      // When Select2 dropdown opens, force focus on its search input field
+      $(document).on('select2:open', () => {
+        let searchField = document.querySelector('.select2-container--open .select2-search__field');
+        if (searchField) {
+          searchField.focus();
+        }
+      });
+
+      // 3. Cancel Button Click Event (Reset Form + Clear Select2)
+      $('#cancelBtn').on('click', function() {
+        const form = document.getElementById("contactForm");
+
+        // Standard Form Reset
+        form.reset();
+
+        // Clear Select2 Dropdowns & Trigger Change event
+        $('.location-dropdown, .profession-dropdown').val(null).trigger('change');
+
+        // Clear all text error messages
+        $('#errorName, #errorMobile, #errorLocation, #errorProfession, #errorBlood').text('');
+      });
+    });
+
+    // 4. Form Validation & Processing State
+    document.getElementById("contactForm").onsubmit = function (e) {
+      const submitBtn = document.getElementById('submitBtn');
+
+      // Clear previous errors
+      document.getElementById("errorName").innerText = "";
+      document.getElementById("errorMobile").innerText = "";
+      document.getElementById("errorLocation").innerText = "";
+      document.getElementById("errorProfession").innerText = "";
+      document.getElementById("errorBlood").innerText = "";
+
+      let valid = true;
+
+      const name = document.querySelector("[name='name']").value.trim();
+      const mobile = document.querySelector("[name='mobile']").value.trim();
+      const location = document.querySelector("[name='location']").value.trim();
+      const profession = document.querySelector("[name='profession']").value.trim();
+      const blood = document.querySelector("input[name='blood']:checked");
+
+      if (name === "") {
+        document.getElementById("errorName").innerText = "Name is required.";
+        valid = false;
+      }
+
+      if (!/^\d{10}$/.test(mobile)) {
+        document.getElementById("errorMobile").innerText = "Mobile number must be 10 digits.";
+        valid = false;
+      }
+
+      if (location === "") {
+        document.getElementById("errorLocation").innerText = "Location is required.";
+        valid = false;
+      }
+
+      if (profession === "") {
+        document.getElementById("errorProfession").innerText = "Profession is required.";
+        valid = false;
+      }
+
+      if (!blood) {
+        document.getElementById("errorBlood").innerText = "Please select YES or NO.";
+        valid = false;
+      }
+
+      if (valid) {
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+        submitBtn.disabled = true;
+      } else {
+        e.preventDefault();
+      }
+    };
   </script>
 </body>
 </html>

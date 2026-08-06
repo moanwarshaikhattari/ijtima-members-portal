@@ -96,7 +96,7 @@
                     <label class="form-label" for="location">Location*</label>
                     <select class="form-select location-dropdown mb-0" id="location" name="location">
                       <!-- Placeholder ke liye empty option zaroori hai -->
-                      <option value="" {% if not entered_location %}selected{% endif %}></option>
+                      <option></option>
                       {% for key, value in Member.LOCATION_CHOICES %}
                           <option value="{{ key }}" {% if entered_location == key %}selected{% endif %}>
                               {{ value }}
@@ -109,7 +109,7 @@
                     <label class="form-label" for="profession">Profession*</label>
                     <select class="form-select profession-dropdown mb-0" id="profession" name="profession">
                       <!-- Placeholder ke liye empty option zaroori hai -->
-                      <option value="" {% if not entered_profession %}selected{% endif %}></option>
+                      <option></option>
                       {% for key, value in Member.PROFESSION_CHOICES %}
                           <option value="{{ key }}" {% if entered_profession == key %}selected{% endif %}>
                               {{ value }}
@@ -161,34 +161,59 @@
   <script src="{% static 'assets/js/main.js' %}"></script>
   
   <!-- searchable drop down  -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Select2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <script>
     $(document).ready(function() {
-      $('.profession-dropdown').select2({
-        theme: 'bootstrap-5', // Bootstrap 5 Look & Feel
-        placeholder: 'Search or Select Profession...',
-        allowClear: true,
-        width: '100%'
-      });
-    });
-
-    $(document).ready(function() {
+  // Initialize Location Dropdown
       $('.location-dropdown').select2({
-        theme: 'bootstrap-5', // Bootstrap 5 Look & Feel
+        theme: 'bootstrap-5',
         placeholder: 'Search or Select Location...',
         allowClear: true,
         width: '100%'
       });
-    });
-  </script>
 
-  <script>
+      // Initialize Profession Dropdown
+      $('.profession-dropdown').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Search or Select Profession...',
+        allowClear: true,
+        width: '100%'
+      });
+
+      // 2. Fix for Mobile View Keypad Open Issue:
+      // When Select2 dropdown opens, force focus on its search input field
+      $(document).on('select2:open', () => {
+        let searchField = document.querySelector('.select2-container--open .select2-search__field');
+        if (searchField) {
+          searchField.focus();
+        }
+      });
+
+      // 3. Cancel Button Click Event (Reset Form + Clear Select2)
+      $('#cancelBtn').on('click', function() {
+        const form = document.getElementById("contactForm");
+
+        // Standard Form Reset
+        form.reset();
+
+        // Clear Select2 Dropdowns & Trigger Change event
+        $('.location-dropdown, .profession-dropdown').val(null).trigger('change');
+
+        // Clear all text error messages
+        $('#errorName, #errorMobile, #errorLocation, #errorProfession, #errorBlood').text('');
+      });
+    });
+
+    // 4. Form Validation & Processing State
     document.getElementById("contactForm").onsubmit = function (e) {
       const submitBtn = document.getElementById('submitBtn');
+
       // Clear previous errors
       document.getElementById("errorName").innerText = "";
       document.getElementById("errorMobile").innerText = "";
@@ -201,7 +226,7 @@
       const name = document.querySelector("[name='name']").value.trim();
       const mobile = document.querySelector("[name='mobile']").value.trim();
       const location = document.querySelector("[name='location']").value.trim();
-      const profession= document.querySelector("[name='profession']").value.trim();
+      const profession = document.querySelector("[name='profession']").value.trim();
       const blood = document.querySelector("input[name='blood']:checked");
 
       if (name === "") {
@@ -225,33 +250,17 @@
       }
 
       if (!blood) {
-        document.getElementById("errorBlood").innerText =
-            "Please select YES or NO.";
+        document.getElementById("errorBlood").innerText = "Please select YES or NO.";
         valid = false;
       }
 
-      // If form is valid, show processing
       if (valid) {
         submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
         submitBtn.disabled = true;
       } else {
-        e.preventDefault(); // stop form from submitting
+        e.preventDefault();
       }
     };
-
-    document.getElementById("cancelBtn").addEventListener("click", function () {
-      const form = document.getElementById("contactForm");
-
-      // Reset form
-      form.reset();
-
-      // Clear all error messages
-      document.getElementById("errorName").innerText = "";
-      document.getElementById("errorMobile").innerText = "";
-      document.getElementById("errorLocation").innerText = "";
-      document.getElementById("errorProfession").innerText = "";
-      document.getElementById("errorBlood").innerText = "";
-    });
   </script>
 </body>
 </html>
