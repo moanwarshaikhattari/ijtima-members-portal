@@ -69,7 +69,7 @@ class Member(models.Model):
         ('Teacher', 'Teacher'),
         ('Advocate', 'Advocate'),
         ('Freelancer', 'Freelancer'),
-        ('Self Employee', 'self Employee'),
+        ('Self Employee', 'Self Employee'),
         ('Jobless', 'Jobless'),
         ('Retired', 'Retired'),
         ('Other', 'Other'),

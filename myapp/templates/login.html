@@ -30,14 +30,14 @@
       <form id="contactForm" method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="mb-1">
-          <label class="form-label" for="loginEmail">Email Address*</label>
+          <label class="form-label" for="loginEmail">Email Address<strong class="text-danger">*</strong></label>
           <input class="form-control" id="loginEmail" name="email" type="email" placeholder="Enter Valid Email ID">
           <div class="text-danger error" id="errorEmail"></div>
         </div>
         <!-- Inside form in login.html -->
         <div class="mb-3">
           <div class="d-flex justify-content-between">
-            <label class="form-label" for="loginPassword">Password*</label>
+            <label class="form-label" for="loginPassword">Password<strong class="text-danger">*</strong></label>
           </div>
           
           <div class="input-group">
