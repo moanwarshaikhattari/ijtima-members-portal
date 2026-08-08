@@ -111,18 +111,18 @@
                         <form id="contactForm" method="POST" action="{% url 'create_user' %}">
                         {% csrf_token %}
                         <div class="mb-1">
-                            <label class="form-label" for="registerName">Full Name*</label>
+                            <label class="form-label" for="registerName">First & Last Name<strong class="text-danger">*</strong></label>
                             <input class="form-control" id="registerName" name="name" type="text" placeholder="Enter First Name & Last Name" oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')">
                             <div class="text-danger error" id="errorName"></div>
                         </div>
                         <div class="mb-1">
-                            <label class="form-label" for="registerEmail">Email Address*</label>
+                            <label class="form-label" for="registerEmail">Email Address<strong class="text-danger">*</strong></label>
                             <input class="form-control" id="registerEmail" name="email" type="email" placeholder="Enter Valid Email ID">
                             <div class="text-danger error" id="errorEmail"></div>
                         </div>
                         <!-- MOBILE NUMBER FIELD -->
                         <div class="mb-1">
-                            <label class="form-label" for="registerMobile">Mobile Number*</label>
+                            <label class="form-label" for="registerMobile">Mobile Number<strong class="text-danger">*</strong></label>
                             <input class="form-control" id="registerMobile" name="mobile" type="number" placeholder="Enter 10 Digit Mobile Number"
                             maxlength="10"
                             inputmode="numeric"
@@ -131,17 +131,17 @@
                             <div class="text-danger error" id="errorMobile"></div>
                         </div>
                         <div class="mb-1">
-                            <label class="form-label" for="registerDept">Department*</label>
+                            <label class="form-label" for="registerDept">Department<strong class="text-danger">*</strong></label>
                             <input class="form-control" id="registerDept" name="department" type="text" placeholder="Enter Department">
                             <div class="text-danger error" id="errorDept"></div>
                         </div>
                         <div class="mb-1">
-                            <label class="form-label" for="registerLocation">Location*</label>
+                            <label class="form-label" for="registerLocation">Location<strong class="text-danger">*</strong></label>
                             <input class="form-control" id="registerLocation" name="location" type="text" placeholder="Enter Location">
                             <div class="text-danger error" id="errorLocation"></div>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label" for="registerPassword">Password*</label>
+                            <label class="form-label" for="registerPassword">Password<strong class="text-danger">*</strong></label>
                             <div class="input-group">
                             <input class="form-control" id="registerPassword" name="password" type="password" placeholder="Enter Password at least 6 Characters" minlength="6">
                             <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('registerPassword', 'toggleIconRegister')">
@@ -150,13 +150,13 @@
                             </div>
                             <div class="text-danger error" id="errorPassword"></div>
                         </div>
-                        <button class="btn btn-success w-100" type="submit" name="send_otp" id="submitBtn">
+                        <button class="btn btn-success w-100 mt-2" type="submit" name="send_otp" id="submitBtn">
                             <i class="bi bi-envelope-paper" aria-hidden="true"></i> Send OTP & Continue
                         </button>
                         </form>
                     {% endif %}
                 
-                    <!-- <div class="auth-footer mt-2">Already have an account? <a href="{% url 'login' %}"><span class="text-danger">Sign in</span></a></div> -->
+                    <!-- <div class="auth-footer mt-2">Already have an account? <a href="2{% url 'login' %}"><span class="text-danger">Sign in</span></a></div> -->
                 </section>
             </main>
             {% include 'footer-navbar.html' %}

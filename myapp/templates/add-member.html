@@ -51,14 +51,14 @@
 
           <section class="row g-3 mb-lg-0 mb-5">
             <div class="col-12 col-xl-12">
-              {% if messages %}
+              <!-- {% if messages %}
                 {% for message in messages %}
                   <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <strong>Success!</strong> {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>
                 {% endfor %}
-              {% endif %}
+              {% endif %} -->
               
               <form id="contactForm" method="POST" action="{% url 'addmember' %}" class="panel">
                 {% csrf_token %}
@@ -71,7 +71,7 @@
                 
                 <div class="row g-3">
                   <div class="col-md-6 mt-1">
-                    <label class="form-label" for="firstName">Full Name*</label>
+                    <label class="form-label" for="firstName">First & Last Name<strong class="text-danger">*</strong></label>
                     <input class="form-control" id="firstName" name="name" type="text" placeholder="Enter First Name & Last Name" oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')">
                     <div class="text-danger error" id="errorName"></div>
                   </div>
@@ -82,7 +82,7 @@
                     <div class="text-danger error" id="errorMobile"></div>
                   </div> -->
                   <div class="col-md-6 mt-1">
-                    <label class="form-label" for="phone">Mobile Number*</label>
+                    <label class="form-label" for="phone">Mobile Number<strong class="text-danger">*</strong></label>
                     <input class="form-control" id="phone" name="mobile" type="text" value="{{ entered_mobile }}" placeholder="Enter 10 Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                     
                     {% if error_mobile %}
@@ -93,7 +93,7 @@
                   </div>
                   
                   <div class="col-md-4 mt-1">
-                    <label class="form-label" for="location">Location*</label>
+                    <label class="form-label" for="location">Location<strong class="text-danger">*</strong></label>
                     <select class="form-select location-dropdown mb-0" id="location" name="location">
                       <!-- Placeholder ke liye empty option zaroori hai -->
                       <option></option>
@@ -106,7 +106,7 @@
                     <div class="text-danger error" id="errorLocation"></div>
                   </div>
                   <div class="col-md-4 mt-1">
-                    <label class="form-label" for="profession">Profession*</label>
+                    <label class="form-label" for="profession">Profession<strong class="text-danger">*</strong></label>
                     <select class="form-select profession-dropdown mb-0" id="profession" name="profession">
                       <!-- Placeholder ke liye empty option zaroori hai -->
                       <option></option>
@@ -121,7 +121,7 @@
 
                   
                   <div class="col-md-4 mt-1">
-                    <label class="form-label">Blood Donate*</label>
+                    <label class="form-label">Blood Donate<strong class="text-danger">*</strong></label>
 
                     <div class="" role="group" aria-label="Blood Donate">
 

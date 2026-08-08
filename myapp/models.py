@@ -52,6 +52,7 @@ class Member(models.Model):
         ("Turbhe", "Turbhe"),
         ("Turbhe ICL", "Turbhe ICL"),
         ("Uran", "Uran"),
+        ("Ulwe","Ulwe"),
         ("Vashi", "Vashi"),
     ]
     BLOOD_CHOICES=[
@@ -68,7 +69,7 @@ class Member(models.Model):
         ('Teacher', 'Teacher'),
         ('Advocate', 'Advocate'),
         ('Freelancer', 'Freelancer'),
-        # ('Homemaker', 'Homemaker'),
+        ('Self Employee', 'self Employee'),
         ('Jobless', 'Jobless'),
         ('Retired', 'Retired'),
         ('Other', 'Other'),
@@ -78,7 +79,7 @@ class Member(models.Model):
     mobile = models.CharField(max_length=10)
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES)
     blood_donate = models.CharField(max_length=10, choices=BLOOD_CHOICES, null=True, blank=True)
-    profession = models.CharField(max_length=10, choices=PROFESSION_CHOICES, null=True, blank=True)
+    profession = models.CharField(max_length=30, choices=PROFESSION_CHOICES, null=True, blank=True)
     # Member add karne wale logged-in user ka Full Name automatically save hoga
     zimmedar_name = models.CharField(max_length=100)
     

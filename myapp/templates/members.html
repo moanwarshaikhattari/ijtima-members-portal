@@ -56,6 +56,17 @@
               </div>
             </div>
             <div class="table-responsive">
+              {% if messages %}
+                {% for message in messages %}
+                  {% if 'member_alert' in message.extra_tags and 'success' in message.tags %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                      <i class="bi bi-check-circle-fill me-2"></i>
+                      <strong>Success!</strong> {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
               <table class="table align-middle mb-0" id="usersTable" data-searchable-table>
                 <thead>
                   <tr>

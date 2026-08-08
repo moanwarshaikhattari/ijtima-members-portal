@@ -351,7 +351,7 @@ def add_member(request):
             zimmedar_name=zimmedar,
             created_by=request.user
         )
-        messages.success(request, f"Member '{name}' added successfully!")
+        messages.success(request, f"Member '{name}' added successfully!",extra_tags='member_alert')
        # Build WhatsApp URL
         # Message Text
         # message_body = f"Hello {name},\n\nWelcome! Your membership registration is successful.\nLocation: {location}"
@@ -379,6 +379,12 @@ def edit_member(request, pk):
         member.profession = request.POST.get('profession')
         member.blood_donate = request.POST.get('blood')
         member.save()
+
+        messages.success(
+            request, 
+            f"Member '{member.name}' updated successfully!", 
+            extra_tags='member_alert'
+        )
         return redirect('members')
 
     return render(request, 'member-details.html', {
